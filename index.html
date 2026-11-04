@@ -10,10 +10,10 @@
 <body>
 <div id="viewport">
 <div id="stage">
-<!-- ===== 01-S0.html ===== -->
-<!-- S0 開場：從人工撰寫到 AI 全權開發的三年（0:00–0:08，5 頁） -->
+<!-- ===== 01-OPEN.html ===== -->
+<!-- OPEN 講者開場：封面與講師介紹（0:25–0:27，2 頁）；接著進諮詢交流 -->
 
-<section class="slide split cover" data-code="S0" data-page="1" data-time="0:00">
+<section class="slide split cover" data-code="OPEN" data-page="1" data-time="0:25">
   <div class="bg-figure shift"><img src="media/ill/I01-tools-change-method-stays.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">環資國際 · 企業講座</p>
@@ -22,13 +22,13 @@
     <p class="by">Kevin Tsai</p>
   </div>
   <aside class="notes">
-    <p>大家好，我是 Kevin。今天兩個小時，前半段演講，中間休息 10 分鐘，最後 25 分鐘留給大家交流。</p>
+    <p>謝謝貴公司剛才的簡報。大家好，我是 Kevin。接下來的安排是：先回答剛才簡報裡提到的開發問題，也就是會前提供的那四題；回答完、時間允許的話，再進入我準備的講座內容。交流如果討論得比較久，講座就挑重點講，沒關係。</p>
     <p>先講一件小事：我的課程資料夾根目錄，現在並列著七套 AI 工具的設定資料夾。你們用過 Cursor、Antigravity、Codex、Claude Code，工具一年換好幾套，我自己也一直在換。</p>
     <p>所以今天不比較工具。我要講的是換了工具還帶得走的東西：規則、驗證、記憶這些方法，以及把 AI 放進系統裡的時候，要用什麼紀律讓它可信。</p>
   </aside>
 </section>
 
-<section class="slide intro-slide" data-code="S0" data-page="2" data-time="0:01">
+<section class="slide intro-slide" data-code="OPEN" data-page="2" data-time="0:26">
   <p class="kicker">開場 · 講師介紹</p>
   <!-- 講師介紹：版型參考台南課程 teaching-site 的介紹頁（頭像、簡介、專長、著作、頻道 QR），配色沿用本簡報 -->
   <div class="intro-row">
@@ -66,8 +66,581 @@
     <p>右邊是我的 YouTube 和粉絲專頁，有興趣可以掃一下，今天的很多內容在頻道上有更完整的示範。</p>
   </aside>
 </section>
+<!-- ===== 02-QA.html ===== -->
+<!-- 諮詢交流／Q&A（0:27–1:00，24 頁）：會前四題詳解版（Q1 5 頁、Q2 4 頁、召回測試補充 3 頁、Q3 3 頁、Q4 4 頁），再以延伸題當參考，最後轉場進講座 -->
 
-<section class="slide" data-code="S0" data-page="3" data-time="0:01">
+<section class="slide" data-code="QA" data-page="1" data-time="0:27">
+  <p class="kicker">會前問題 · Q1</p>
+  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>問題 1</b>　當知識庫包含大量專案報告書、計畫分析等長篇文件時，應如何進行文件切分、摘要、索引及檢索設計，才能提升資料召回與檢索的精準度？</p></div>
+  <h2 class="title">先分問題類型，各走各的路</h2>
+  <table class="grid">
+    <colgroup><col style="width: 15%"><col style="width: 25%"><col style="width: 28%"><col style="width: 32%"></colgroup>
+    <thead><tr><th>類型</th><th>例子</th><th>走哪條路</th><th>原因</th></tr></thead>
+    <tbody>
+      <tr><td><b>精確查找</b></td><td>計畫編號、條號</td><td>欄位或關鍵字</td><td>向量分不清編號</td></tr>
+      <tr><td><b>單份問答</b></td><td>這份的採樣方法</td><td>限定文件再找段落</td><td>範圍已知</td></tr>
+      <tr><td><b>跨報告彙整</b></td><td>近五年 VOCs 減量做法</td><td>先挑報告，再找段落</td><td>直接找，會被少數長報告佔滿</td></tr>
+      <tr><td><b>統計、比較</b></td><td>各縣市歷年經費</td><td>SQL 查資料表</td><td>RAG 拿不到完整母體</td></tr>
+      <tr><td><b>全庫主題</b></td><td>談了哪些議題</td><td>事先產生主題摘要</td><td>這是摘要問題</td></tr>
+    </tbody>
+  </table>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-6 檢索：先撈，再排　·　B2-7 判斷：小模型先分流</p>
+  <aside class="notes">
+    <p>剛才貴公司簡報裡提到的開發問題，就是會前提供的這四題，我先逐題回答，之後開放現場與視訊的朋友提問。投影片下方標的「對應講座」是後面講座裡相關的段落，時間夠會再講到。畫面上的表格我會盡量完整，台中的朋友不用靠我口述也看得到解法。</p>
+    <p>第一題。一萬五千份報告的規模，最常見的失敗不是向量模型不夠好，而是同一套索引要回答四、五種不同的問題。所以第一步先把問題分類。</p>
+    <p>查計畫編號、測站代碼、條號這種精確查找，走結構化欄位或關鍵字，因為向量檢索不擅長編號，會找到意思相近但不是那一筆。問某一份報告裡的內容，先用文件 ID 限定範圍再找段落。跨報告彙整，要先用文件層的 metadata 和摘要挑出相關報告，再到這幾份裡找段落，否則前幾名容易被少數幾份長報告佔滿。</p>
+    <p>近十年各縣市某類計畫經費這種統計題，根本不是 RAG：RAG 拿到的是幾段文字，不是完整母體，算出來的數字不可信，要把欄位事先抽出來放資料庫用 SQL 算。至於「這些報告主要談了哪些議題」，是摘要問題，用事先產生的主題摘要。路由本身可以用規則加小型判斷模型做，不必每題都叫大模型，這部分第四題會再講。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="2" data-time="0:28">
+  <p class="kicker">會前問題 · Q1</p>
+  <h2 class="title">三層索引：先挑報告，再找段落</h2>
+  <table class="grid">
+    <colgroup><col style="width: 14%"><col style="width: 46%"><col style="width: 40%"></colgroup>
+    <thead><tr><th>層</th><th>存什麼</th><th>用在哪</th></tr></thead>
+    <tbody>
+      <tr><td><b>文件層</b></td><td>metadata、全文摘要（約 300～500 字）、目錄</td><td>從一萬五千份挑出 10～30 份</td></tr>
+      <tr><td><b>章節層</b></td><td>每一章的摘要，掛章節路徑</td><td>長報告先定位到章</td></tr>
+      <tr><td><b>段落層</b></td><td>父子分塊：小塊比對，命中後回傳所屬大塊</td><td>在挑出的報告裡找證據</td></tr>
+    </tbody>
+  </table>
+  <ul class="points compact" style="margin-top: 30px;">
+    <li>依報告自己的章節結構切，不用固定字數；一節太長才在段落邊界再切</li>
+    <li>每塊前面加「報告名＞第三章＞3.2 節」路徑，也可請 LLM 補 50～100 token 的位置說明</li>
+  </ul>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-5 圖片、PDF、聲音，先變成文字　·　B2-6 檢索：先撈，再排</p>
+  <aside class="notes">
+    <p>索引做成三層。文件層放 metadata、全文摘要和目錄，第一階段用它從一萬五千份裡挑出十到三十份。章節層放每一章的摘要，在長報告裡先定位到章。段落層用父子分塊：小塊讓向量比對精準，命中後回傳所屬的大塊，讓模型有足夠的上下文。</p>
+    <p>切分依報告自己的章節結構，不用固定字數：先把 PDF 解析成有標題層級的 Markdown，再依章節切，一節太長才在段落邊界再切。每一塊前面加上「報告名、第幾章、第幾節」的路徑。</p>
+    <p>還可以用 LLM 替每一塊寫五十到一百 token 的位置說明，說這塊在整份報告的什麼位置、談什麼，接在塊前面再建向量和關鍵字索引，這叫 Contextual Retrieval，代價是每塊多一次 LLM 呼叫。我自己的專案設定是父塊兩千字、子塊四百字、重疊五十字，那只是我的實測設定，不是最佳值，要用自己的測試集調。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="3" data-time="0:29">
+  <p class="kicker">會前問題 · Q1</p>
+  <h2 class="title">召回先放大，再逐段篩選</h2>
+  <table class="grid">
+    <colgroup><col style="width: 15%"><col style="width: 42%"><col style="width: 15%"><col style="width: 28%"></colgroup>
+    <thead><tr><th>階段</th><th>做法</th><th>留下</th><th>部署</th></tr></thead>
+    <tbody>
+      <tr><td><b>1 放大召回</b></td><td>向量＋關鍵字雙軌，metadata 先過濾</td><td>100～200 筆</td><td>地端</td></tr>
+      <tr><td><b>2 精排</b></td><td>rerank 逐筆打相關分數</td><td>20～30 筆</td><td>地端</td></tr>
+      <tr><td><b>3 篩選</b></td><td>Jev（雲端的小型是非題判斷服務）逐段問「有沒有回答所需資訊」</td><td>5～10 筆</td><td>雲端，只送公開或去識別化資料</td></tr>
+      <tr><td><b>4 生成</b></td><td>LLM 只依留下的段落回答，附報告名與頁碼</td><td>—</td><td>依資料分級</td></tr>
+    </tbody>
+  </table>
+  <ul class="points compact" style="margin-top: 26px;">
+    <li>政府單位多用地端 embedding，效果常比雲端差：用筆數換召回，再逐段提高精準度</li>
+    <li>雙軌一定要有；中文斷詞用 ICU 或 CKIP 或 2-gram，再加領域詞典</li>
+  </ul>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-6 檢索：先撈，再排　·　B2-7 判斷：小模型先分流，需要時才叫 LLM</p>
+  <aside class="notes">
+    <p>政府單位的 embedding 原則上用地端模型，資料不出機關，效果常比雲端差，所以檢索分三段，先用數量換召回，再逐段提高精準度。</p>
+    <p>第一段放大召回：地端 embedding 加關鍵字雙軌並行，先用 metadata 過濾，再融合，多抓一百到兩百筆。第二段用地端 rerank 排到二十到三十筆。第三段用 Jev 逐段問一題是非題：這段是否包含回答問題所需的資訊，留下五到十筆。第四段才是 LLM 生成，只依留下的段落回答，附報告名與頁碼。這些筆數是起始值，要依測試調整。</p>
+    <p>Jev 是雲端服務。如果 embedding 要地端的理由是資料不能出機關，那把段落送到 Jev 也一樣是出機關；所以只送公開的成果報告，而且要經機關確認；非公開或含個資的資料，這一段改用地端模型回答是非題，或直接用 rerank 分數門檻。中文效果要自己測，所以正解被篩掉的誤殺率一定要量。</p>
+    <p>雙軌一定要有。我在法規查詢實測過，同一句白話問題，語意軌找到三筆相關判決、關鍵字軌零筆；改成精煉關鍵字後五筆，兩軌結果零重疊。地端 embedding 比較弱時，關鍵字軌更重要。另外中文斷詞是最常被忽略的地方，預設斷詞器會把細懸浮微粒、揮發性有機物切錯，建議用 ICU 或中研院 CKIP，或直接 2-gram，再加污染物、測站、法規名的領域詞典。</p>
+    <p>最後提醒：向量資料庫加過濾條件時，篩選很嚴會讓回傳筆數少於 k 甚至零筆，上線前要用條件很嚴的查詢測一次。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="4" data-time="0:30">
+  <p class="kicker">會前問題 · Q1</p>
+  <h2 class="title">metadata 先拿系統欄位，再逐步補</h2>
+  <div class="cards c2" style="margin-top: 10px;">
+    <div class="card accent"><p class="label">加哪些欄位</p>
+      <p>識別：計畫名稱與編號、年度、主辦與執行單位</p>
+      <p>內容：報告類型、版本、介質、污染物、地區、資料期間、引用法規</p>
+      <p>位置：章節路徑、頁碼、內容型態</p>
+      <p>管控：公開等級，檢索前先過濾</p>
+    </div>
+    <div class="card"><p class="label">取得順序（成本由低到高）</p>
+      <p>1　來源系統已有的欄位</p>
+      <p>2　規則與詞典：編號、年度、縣市、污染物、條號</p>
+      <p>3　抽不到才用小型判斷模型分類，記信心值</p>
+      <p>4　版本、公開等級抽樣人工核對</p>
+    </div>
+  </div>
+  <p class="timeline-line" style="margin-top: 26px;"><b>查詢時</b><span class="sep">→</span>抽出問題裡的條件<span class="sep">→</span>帶條件檢索<span class="sep">→</span>0 筆就逐步放寬並說明<span class="sep">→</span>條件顯示給使用者可改</p>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-6 檢索：先撈，再排　·　B2-8 模型是設定，不是程式碼</p>
+  <aside class="notes">
+    <p>metadata 是這次最值得投資的地方。欄位分四組：識別，像計畫名稱、編號、年度、主辦單位、執行單位；內容，像報告類型、版本是否定稿、環境介質、污染物、地理範圍、資料期間、引用的法規；位置，像章節路徑、頁碼、內容型態是正文、表格、圖說還是附錄；管控，就是公開等級，這個要在檢索之前先過濾。</p>
+    <p>取得欄位的順序是成本由低到高。第一，先拿來源系統已有的欄位，像環保專案成果倉儲系統的開放資料就有標題、摘要、年度、主辦、執行單位。第二，用規則和詞典抽：計畫編號、年度、縣市、污染物、法條字號，可重現、零成本、錯了查得到原因。第三，規則抽不到的才交給小型判斷模型做固定選項的分類，像環境介質、主題，並記下信心值。第四，版本、公開等級這類高價值欄位抽樣人工核對。所有正規化，像機關改制、同義詞、單位，用對照表做，不靠模型記。</p>
+    <p>查詢端怎麼用：先從使用者問題抽出篩選條件，像「台中」「去年」「空品」變成縣市、資料期間、介質；先帶條件檢索，0 筆或太少就逐步放寬，先拿掉地區、再拿掉年度，並且在回答裡說明放寬了什麼；抽出的條件要顯示給使用者看，可以手動修改，這比讓模型猜更不容易錯。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="5" data-time="0:32">
+  <p class="kicker">會前問題 · Q1</p>
+  <h2 class="title">表格與圖表抽成資料，數字不靠向量</h2>
+  <ul class="points compact">
+    <li>表格、圖表、統計數據抽出來存進資料庫，記來源報告與頁碼，抽樣核對</li>
+    <li>向量庫只留「表格說明＋表頭」一塊，內容型態標「表格」，並記對應的資料表</li>
+    <li>檢索命中這類塊時，改走 SQL 查資料表，不拿向量裡的文字回答數字</li>
+    <li>圖表優先找原始數據；找不到才用多模態模型產生文字描述，標「AI 描述」，數字人工核對</li>
+    <li>跨頁的大表，補上重複的表頭</li>
+  </ul>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-5 圖片、PDF、聲音，先變成文字　·　B2-6 檢索：先撈，再排</p>
+  <aside class="notes">
+    <p>這一頁是長篇報告特別要注意的：報告裡很多重要資訊在表格、圖表和統計數據裡，這些東西如果直接切成文字塊丟進向量庫，數字會被切碎、表頭會掉，回答出來的數字不可信。</p>
+    <p>做法是把表格、圖表和統計數據抽出來存進資料庫，每一筆記錄來源報告和頁碼，並且抽樣人工核對。向量庫裡只留一塊「表格說明加表頭」，內容型態標成表格，並且記下它對應的資料表。檢索命中這種塊的時候，不是拿向量裡的文字回答，而是改走 SQL 去查資料表，所以數字題一律由資料表給答案。</p>
+    <p>圖表優先去找原始數據，環保專案成果倉儲系統本來就要求上傳原始數據；找不到原始數據，才用多模態模型替圖表產生文字描述，這種描述要標成「AI 描述」，裡面的數字要人工核對。跨頁的大表，解析時補上重複的表頭，免得後面幾頁的欄位沒有名字。</p>
+    <p>至於怎麼確認這些調整真的讓命中率變好，後面「補充」那三頁會講召回測試流程。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="6" data-time="0:33">
+  <p class="kicker">會前問題 · Q2</p>
+  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>問題 2</b>　建置向量資料庫時，標題、章節名稱、摘要、正文等資料應如何取捨，哪些內容需要向量化？遇到數十萬字的成果報告，又應如何處理？</p></div>
+  <h2 class="title">基本 RAG 之外，每階段加一層</h2>
+  <table class="grid">
+    <colgroup><col style="width: 14%"><col style="width: 33%"><col style="width: 53%"></colgroup>
+    <thead><tr><th>階段</th><th>做什麼</th><th>這兩題的做法</th></tr></thead>
+    <tbody>
+      <tr><td><b>索引前</b></td><td>解析、切分、補上下文</td><td>依章節切、塊前加路徑、摘要、表格抽出</td></tr>
+      <tr><td><b>查詢前</b></td><td>改寫、拆解、路由、抽條件</td><td>口語改公文用語；比較題拆子問題；條號、數字題不先讓 AI 寫假想答案再去找（HyDE）</td></tr>
+      <tr><td><b>檢索</b></td><td>多路召回、融合</td><td>向量＋關鍵字＋metadata 過濾</td></tr>
+      <tr><td><b>檢索後</b></td><td>重排、去重、把關</td><td>rerank；同計畫多版本去重；逐段判斷是否回答問題</td></tr>
+      <tr><td><b>生成</b></td><td>依證據回答</td><td>只引用檢索結果；查無依據照範本拒答</td></tr>
+    </tbody>
+  </table>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-6 檢索：先撈，再排　·　B2-7 判斷：小模型先分流，需要時才叫 LLM</p>
+  <aside class="notes">
+    <p>第二題用進階 RAG 的框架來看。基本 RAG 是切塊、向量化、找相似、塞給模型一條線；進階 RAG 在索引前、查詢前、檢索後各加一層處理。</p>
+    <p>索引前做解析、清理、切分、補上下文、metadata 和表格抽出。查詢前做改寫、拆解、路由、抽條件：口語和公文用語不同，像「臭味」和「異味污染物」，改寫可以對齊，但原問題也要一起檢索；比較題像「比較一百一十二和一百一十三年的做法」拆成子問題；HyDE 是先讓 LLM 寫一段假想答案去找相似段落，假想答案裡的錯誤名詞或年份會把檢索帶偏，所以條號和數字題不要用。</p>
+    <p>檢索階段向量加關鍵字加 metadata 過濾，再融合。檢索後做 rerank、同計畫期中期末多版本去重，預設留定稿，以及逐段判斷這段有沒有回答問題，全部不相關就改查或拒答；這一步很適合小型判斷模型，也接到第三題的語意閘門。最後生成只能引用檢索結果，附報告名和頁碼，查無依據就照範本拒答。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="7" data-time="0:34">
+  <p class="kicker">會前問題 · Q2</p>
+  <h2 class="title">標題接在正文前，摘要用來找報告</h2>
+  <table class="grid">
+    <colgroup><col style="width: 22%"><col style="width: 14%"><col style="width: 13%"><col style="width: 20%"><col style="width: 31%"></colgroup>
+    <thead><tr><th>內容</th><th>向量化</th><th>關鍵字</th><th>metadata</th><th>處理方式</th></tr></thead>
+    <tbody>
+      <tr><td><b>標題、章節名稱</b></td><td>不單獨做</td><td>✔</td><td>✔ 章節路徑</td><td>接在每塊前一起向量化</td></tr>
+      <tr><td><b>摘要</b></td><td>✔</td><td>✔</td><td>—</td><td>用來挑報告；回答回正文找證據</td></tr>
+      <tr><td><b>正文、結論與建議章</b></td><td>✔ 小塊</td><td>✔</td><td>章節類型</td><td>命中小塊，回傳大塊</td></tr>
+      <tr><td><b>表格</b></td><td>✔ 說明＋表頭</td><td>✔</td><td>內容型態＝表格</td><td>本體進資料表，數字題用 SQL</td></tr>
+      <tr><td><b>圖說</b></td><td>✔</td><td>✔</td><td>內容型態＝圖</td><td>重要圖表標「AI 描述」</td></tr>
+      <tr><td><b>附錄原始數據、目錄、參考文獻、頁首頁尾、浮水印</b></td><td>✘</td><td>✘</td><td>頁碼留著</td><td>附錄進資料表；目錄用來建章節樹</td></tr>
+    </tbody>
+  </table>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-5 圖片、PDF、聲音，先變成文字　·　B2-6 檢索：先撈，再排</p>
+  <aside class="notes">
+    <p>先講取捨。標題和章節名稱不要單獨做成向量，它們太短、語意太少；正確用法是接在每一塊正文前面一起向量化，同時當 metadata 和關鍵字欄位，章節名稱也是章節摘要的標題。</p>
+    <p>摘要要向量化，不管是作者寫的中英文摘要，還是我們產生的章節摘要、全文摘要，但它是拿來找報告、找章節，不是拿來回答細節，回答時要回到正文找證據，不直接引用摘要。正文切小塊做向量，命中小塊回傳大塊。結論與建議章在跨報告彙整時常常只需要這一章，可以加權或獨立索引。</p>
+    <p>表格向量化的只是表格說明加表頭，本體轉成結構化資料，數值題查資料表。圖說向量化，重要圖表可用多模態模型產生文字描述，標成 AI 描述。附錄原始數據進資料表，也正是環保專案成果倉儲系統缺漏的部分。目錄只用來建章節樹；參考文獻除非要做誰引用了某研究才另建索引；頁首頁尾、頁碼、浮水印、封面，解析時清掉，頁碼留作 metadata。</p>
+    <p>另外一個做法是多重表示：一個父塊可以有好幾個向量指向它，包括子塊、摘要，還有由 LLM 產生的「這段能回答哪些問題」。民眾或承辦人的問法和報告用語差很多時，這很有用。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="8" data-time="0:36">
+  <p class="kicker">會前問題 · Q2</p>
+  <h2 class="title">整份讀完，放在建索引時做一次</h2>
+  <table class="grid">
+    <colgroup><col style="width: 18%"><col style="width: 82%"></colgroup>
+    <thead><tr><th>步驟</th><th>做什麼</th></tr></thead>
+    <tbody>
+      <tr><td><b>1 版面解析</b></td><td>辨識標題層級與表格，轉成 Markdown；掃描頁走 OCR</td></tr>
+      <tr><td><b>2 建章節樹</b></td><td>章＞節＞小節，每個節點記頁碼範圍</td></tr>
+      <tr><td><b>3 整份精讀</b></td><td>依章節精讀一次，產出摘要卡（目的、地區、期間、方法、發現、數據、建議、限制、法規）</td></tr>
+      <tr><td><b>4 依結構切塊</b></td><td>節內切父塊與子塊，塊前加章節路徑與位置說明</td></tr>
+      <tr><td><b>5 章摘要</b></td><td>由整章原文產生，不是片段摘要的合併</td></tr>
+      <tr><td><b>6 表格與附錄</b></td><td>進資料表，記來源報告與頁碼</td></tr>
+      <tr><td><b>7 查詢時</b></td><td>摘要卡定位報告與章，章內檢索，必要時整章交給模型精讀</td></tr>
+    </tbody>
+  </table>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-5 圖片、PDF、聲音，先變成文字　·　B2-6 檢索：先撈，再排</p>
+  <aside class="notes">
+    <p>十幾萬字的報告，我同意只靠「切塊之後再摘要、再往上合併」效果有限：每一塊在切開的當下就失去前後文，往上合併的摘要只是片段的摘要的摘要，前面章節定義的名詞、後面章節的結論都接不起來。</p>
+    <p>解法是把整份讀完這件事放在建索引時做一次，結果存下來給每次查詢用；查詢時只對已經定位到的章節精讀。流程七步。第一，版面解析：用能辨識標題層級、閱讀順序、表格結構的解析器轉成 Markdown，例如 IBM 開源、可以地端跑的 Docling，跨頁表格可以重複表頭；掃描頁另外走 OCR，抽樣人工核對。第二，依標題層級或目錄頁建章節樹，每個節點記頁碼範圍。</p>
+    <p>第三，整份精讀：依章節 map-reduce，產生報告摘要卡，固定欄位包括目的、地區、期間、方法、主要發現、關鍵數據、建議、限制、引用法規，這也是 metadata 的來源。第四，依結構切父塊子塊，塊前加章節路徑和位置說明。第五，章摘要由整章原文產生，可以參考 RAPTOR 的樹狀摘要概念，但分組依報告自己的目錄樹，不用自動分群，比較好重現與除錯。第六，表格與附錄進資料表。第七，查詢時由粗到細：摘要卡和欄位定位到報告與章，章內走剛才的三段式漏斗，必要時整章交給模型精讀。</p>
+    <p>十幾萬字大約是十幾萬到二十幾萬 token，依 tokenizer 差很多，用實際檔案量一次，再決定能不能整份放進上下文；地端模型的上下文多在一百二十八 k 等級，放不下就改成整章。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="9" data-time="0:37">
+  <p class="kicker">會前問題 · Q2</p>
+  <h2 class="title">全庫問題與工具，各有取捨</h2>
+  <div class="cards c2" style="margin-top: 10px;">
+    <div class="card accent"><p class="label">跨一萬五千份的全庫問題</p>
+      <p>基本 RAG 只找最像的幾段，答不了「談了哪些議題」</p>
+      <p>先用領域欄位建輕量知識圖：計畫—地區—污染物—方法—結論—法規</p>
+      <p>跨報告主題才試完整 GraphRAG；單份細節題不一定比較好，建置成本也高</p>
+    </div>
+    <div class="card"><p class="label">政府場域的工具提醒</p>
+      <p>陸製風險：BGE 嵌入與重排、Qwen、MinerU、jieba、Milvus</p>
+      <p>替代：TAIDE 嵌入模型、Docling、ICU 或 CKIP 斷詞、pgvector 或 Qdrant</p>
+      <p>Milvus 的來源要書面確認</p>
+    </div>
+  </div>
+  <div class="callout" style="margin-top: 26px;"><p><b>建議順序</b>：摘要卡與欄位 → 領域知識圖 → 測試集仍不及格，才試完整 GraphRAG</p></div>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-3、B2-4 政府限制　·　B2-5 先變成文字　·　B2-6 先撈再排</p>
+  <aside class="notes">
+    <p>全庫問題，像「這些報告主要談了哪些議題」「某主題十年來的研究脈絡」，基本 RAG 做不好，因為它只會找最像的幾段。我的建議順序是：先做摘要卡和結構化欄位，用這些欄位建領域 schema 的輕量知識圖，也就是計畫、地區、污染物、方法、結論、法規之間的關係；召回測試裡跨報告和全庫主題那類題目仍然不及格，才用 LazyGraphRAG 做概念驗證，最後才考慮完整 GraphRAG。每一步都用同一份測試集比較。</p>
+    <p>GraphRAG 是不是比較好要分題型看：跨很多份報告的主題與關聯題，答案的完整度與多樣性明顯比較好，但那是英文資料集、廠商自測、LLM 評審的完整度，不是事實正確率；單份報告的細節題、精確查找，不一定比較好。代價是建索引要 LLM 讀完全部文字，圖的品質取決於實體抽取，同一測站、同一污染物有多種寫法，合併不好圖就斷掉，資料一更新分群與摘要要重算。較便宜的替代做法是依介質、年度、主辦署分組，用摘要卡事先產生分組摘要並定期更新。</p>
+    <p>工具選擇有一個政府場域的提醒：聽眾做政府標案，納入特別聲明的契約履約不得使用陸製資通訊產品。RAG 工具鏈裡常見但來源屬中國的元件要先檢查：BGE 嵌入和重排是北京智源，Qwen 是阿里巴巴，MinerU 是上海人工智慧實驗室，jieba 和 IK 斷詞是中國開發者，Milvus 創立於上海，來源要書面確認。替代方案是 TAIDE 嵌入模型、雲端的非陸製服務、IBM 的 Docling、ICU 或中研院 CKIP 斷詞，向量資料庫可以用 pgvector、Elasticsearch、Qdrant。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="10" data-time="0:38">
+  <p class="kicker">會前問題 · Q1、Q2 補充</p>
+  <h2 class="title">測試集用真實提問，正解標頁碼</h2>
+  <table class="grid">
+    <colgroup><col style="width: 17%"><col style="width: 83%"></colgroup>
+    <thead><tr><th>項目</th><th>做法</th></tr></thead>
+    <tbody>
+      <tr><td><b>題目來源</b></td><td>承辦人真實提問、系統 log 優先；從報告反向出題的問法太像原文，召回率會被高估</td></tr>
+      <tr><td><b>規模</b></td><td>50～100 題起步，之後從線上 log 持續補</td></tr>
+      <tr><td><b>題型</b></td><td>精確查找、單份問答、跨報告、統計、應拒答（庫裡本來沒有答案）</td></tr>
+      <tr><td><b>正解標註</b></td><td>標「報告 ID＋頁碼」，不標塊編號；改切塊後編號會全變</td></tr>
+      <tr><td><b>附帶</b></td><td>附上預期的 metadata 條件；測試集放版控，改題留紀錄</td></tr>
+    </tbody>
+  </table>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-8 模型是設定，不是程式碼　·　B3-7 「只查母法」的防護，搬進網站時掉了</p>
+  <aside class="notes">
+    <p>RAG 調參數的地方很多：切塊大小、重疊、metadata、embedding 模型、召回筆數、rerank、篩選門檻，每一個都會互相影響。沒有自己的測試集和測試流程，所有調整都是憑感覺。所以每改一個，都要重跑同一份測試題，拿到召回率的實際數字再決定。</p>
+    <p>測試集怎麼建。題目來源第一優先是承辦人的真實提問和系統 log；第二才是從報告段落反向出題，由 LLM 產生、人工審過，但反向出題的問法會太像原文，召回率會被高估。我自己的意圖分類評測就遇過：用和選項描述同源的語句測，第一名正確率一百趴，只能當上限，後來另外補真實語句。</p>
+    <p>規模從五十到一百題起步，少於五十題，一兩題的差異就會讓結論翻轉。題型要分層：精確查找、單份內問答、跨報告、統計，還要有應拒答的題目，也就是庫裡本來沒有答案的，用來量不該找到卻硬找。正解要標報告 ID 加頁碼，不要標塊編號，因為一改切塊，編號就全變了；判定命中是檢索到的塊和正解頁碼區間有重疊。題目附上預期的 metadata 條件，可以單獨測條件抽取那一步。測試集放進版控，改題要留紀錄，因為一改，前後的數字就不能比。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="11" data-time="0:40">
+  <p class="kicker">會前問題 · Q1、Q2 補充</p>
+  <h2 class="title">指標分段量，才知道答案在哪弄丟</h2>
+  <table class="grid">
+    <colgroup><col style="width: 22%"><col style="width: 13%"><col style="width: 38%"><col style="width: 27%"></colgroup>
+    <thead><tr><th>指標</th><th>類型</th><th>量什麼</th><th>決定什麼</th></tr></thead>
+    <tbody>
+      <tr><td><b>文件層 Recall@10</b></td><td><span class="tag teal">標準</span></td><td>前 10 份有沒有正解報告</td><td>摘要卡、metadata 有沒有用</td></tr>
+      <tr><td><b>段落層 Recall@k</b></td><td><span class="tag teal">標準</span></td><td>k＝20～200 有沒有正解段落</td><td>第一段抓幾筆</td></tr>
+      <tr><td><b>MRR</b></td><td><span class="tag teal">標準</span></td><td>第一個正解排第幾</td><td>排序品質</td></tr>
+      <tr><td><b>漏斗各段命中率</b></td><td><span class="tag">排查用</span></td><td>召回、rerank、篩選、送模型各段，正解還在不在</td><td>哪一段把答案弄丟</td></tr>
+      <tr><td><b>篩選誤殺率</b></td><td><span class="tag">排查用</span></td><td>正解被 rerank 或 Jev 篩掉的比例</td><td>rerank 筆數、Jev 門檻</td></tr>
+      <tr><td><b>應拒答正確率</b></td><td><span class="tag">名稱不一</span></td><td>沒答案的題有沒有回「查無」</td><td>門檻是否太低</td></tr>
+    </tbody>
+  </table>
+  <p class="dim" style="font-size: 26px; margin-top: 14px;">備註　其他常見標準指標：檢索 Hit Rate@k、Precision@k、nDCG；生成 faithfulness（是否忠於檢索內容）、answer relevancy（RAGAS）</p>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-8 模型是設定，不是程式碼　·　B2-6 檢索：先撈，再排</p>
+  <aside class="notes">
+    <p>指標要分段量，不是只看最後答對沒有。文件層看前十份有沒有正解報告，用來判斷摘要卡和 metadata 有沒有用。段落層看前 k 段有沒有正解，k 取二十、五十、一百、二百，畫出曲線，第一段要抓多少筆就取曲線開始變平的位置。</p>
+    <p>最重要的是漏斗各段命中率：正解在召回、rerank、篩選、送進模型這四段，每一段還在不在，這樣才知道是哪一段把答案弄丟的。再加上篩選誤殺率，也就是正解被 rerank 或 Jev 篩掉的比例，用來決定 rerank 留幾筆、Jev 門檻設多少。MRR 看正解排第幾名；應拒答正確率看沒答案的題目有沒有回查無，門檻設太低就會硬湊答案。延遲和每題成本是上線可行性要看的，這裡不展開。</p>
+    <p>這些檢索指標不需要 LLM，便宜，可以每次改都跑。</p>
+    <p>補充一下：Recall@k 和 MRR 是資訊檢索的標準指標；漏斗各段命中率和篩選誤殺率是我為了排查自訂的說法，本質是在每一段各量一次 Recall；應拒答在學界常叫 negative rejection 或 abstention，名稱不統一。其他常見的標準指標還有 Hit Rate、Precision@k、nDCG，生成端可以看 RAGAS 的 faithfulness 和 answer relevancy。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="12" data-time="0:41">
+  <p class="kicker">會前問題 · Q1、Q2 補充</p>
+  <h2 class="title">一次只改一個變因，檢索與生成分開測</h2>
+  <div class="cards c2" style="margin-top: 10px;">
+    <div class="card accent"><p class="label">每次調整的流程</p>
+      <p>1　先跑一次，存成基線</p>
+      <p>2　一次只改一個變因</p>
+      <p>3　同一支腳本跑全部題目，與基線並排比較</p>
+      <p>4　失敗題逐題歸類：沒進索引、切壞、條件濾掉、沒召回、被排掉、被篩掉、模型沒用到</p>
+      <p>5　低於基線的修改在 CI 擋下</p>
+    </div>
+    <div class="card"><p class="label">檢索與生成分開測</p>
+      <p>檢索：上面的指標，不用 LLM，每次改都跑</p>
+      <p>生成：回答有沒有被引用的段落支持、頁碼對不對</p>
+      <p>先用程式比對引文是否存在，再讓小型判斷模型判斷「支持、矛盾、沒提到」，低信心抽樣人工看</p>
+      <p>換 embedding 模型等於整個向量庫重建，先在測試環境跑完再上線</p>
+    </div>
+  </div>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-8 模型是設定，不是程式碼　·　B3-7 「只查母法」的防護，搬進網站時掉了</p>
+  <aside class="notes">
+    <p>每次調整的流程。第一，先跑一次目前設定，存成基線。第二，一次只改一個變因：切塊大小、重疊、metadata 欄位、斷詞、embedding 模型、k、rerank 筆數、Jev 門檻。第三，用同一支腳本跑全部題目，輸出每題結果和摘要報表，與基線並排比較。第四，失敗題逐題歸類：沒進索引，像解析失敗或掃描檔沒 OCR；切壞了，答案被切到兩塊；metadata 條件把正解濾掉；向量和關鍵字都沒召回；rerank 排掉；Jev 篩掉；有送進模型但模型沒用到。第五，結果存檔，確定採用的設定把數字寫進變更紀錄。第六，放進 CI，召回率低於基線就擋下，避免之後的修改悄悄變差。第七，換 embedding 模型等於整個向量庫重建，一定要先在測試環境重建、跑完測試再上線。</p>
+    <p>檢索和生成要分開測。檢索用上面的指標，不需要 LLM，便宜。生成另外測回答有沒有被引用的段落支持、引用的頁碼對不對，可以先用程式比對引文是否存在，再用小型判斷模型判斷支持、矛盾或沒提到，低信心的抽樣人工看。</p>
+    <p>要老實說：我自己的法規網站目前只量了案子跑完的完成度，還沒有量檢索正確率；召回測試流程是我也還在補的部分。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="13" data-time="0:42">
+  <p class="kicker">會前問題 · Q3</p>
+  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>問題 3</b>　即使 Prompt 已要求固定格式、指定欄位及使用繁體中文，LLM 輸出仍可能出現格式、欄位變動或偶爾出現簡體字，應如何提升輸出的穩定性與一致性？</p></div>
+  <h2 class="title">要有閘門，但格式不交給模型</h2>
+  <table class="grid">
+    <colgroup><col style="width: 44%"><col style="width: 20%"><col style="width: 36%"></colgroup>
+    <thead><tr><th>要檢查的東西</th><th>誰檢查</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td><b>JSON 結構、欄位、型別、簡體字、大陸用語</b></td><td>程式</td><td>有標準答案，查表比模型準，零成本</td></tr>
+      <tr><td><b>有沒有依據、答非所問、杜撰法源或數字</b></td><td>小型判斷模型（Jev）</td><td>語意判斷，程式做不到</td></tr>
+      <tr><td><b>高風險、低信心</b></td><td>人</td><td>承辦人做最終判斷</td></tr>
+    </tbody>
+  </table>
+  <div class="callout" style="margin-top: 22px;"><p><b>Jev</b>：雲端的小型是非題判斷服務；中文要自測，<b>拆成逐項是非題</b></p></div>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B1-2 哪些事一定要寫進程式碼　·　B3-5 必做步驟寫成程式碼</p>
+  <aside class="notes">
+    <p>先回答要不要用一個模型當閘門：要有閘門，這個方向是對的；但格式和簡體字不該由模型來把關。JSON 結構、欄位、型別，用程式檢查是百分之百、零成本、可重現的；簡體字是字元層級的比對，字典查表就能判斷；用模型檢查反而多一個會出錯的環節。</p>
+    <p>模型閘門留給程式做不到的語意判斷：內容有沒有依據、是不是答非所問、有沒有杜撰法源或數字。這一層用 Jev 這類小型判斷模型很合適，Jev 是雲端的小型是非題判斷服務，一次請求可以平行問多題、回傳機率、依門檻決定放行、轉人工或擋下。高風險、低信心的，交給人，承辦人做最終判斷。</p>
+    <p>Jev 官方文件寫明英文最好、中日韓文要用自己的資料測，也不擅長數字元，字元層級的簡體字偵測正好落在弱項。我的中文實測是字幕斷句：讓它從兩行全文選一個切點，四個例子零命中；改成每個候選切點各問一題「這個切點是否把詞拆開」，使用者保留的界線七十五個裡判斷對了六十七個。教訓是中文要拆成逐項的是非題，不要讓它從整段文字裡挑。</p>
+    <p>資料治理：Jev 是雲端服務，只送公開或去識別化的內容；非公開資料這一層改用地端模型問是非題，或用地端的分類、rerank 模型。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="14" data-time="0:44">
+  <p class="kicker">會前問題 · Q3</p>
+  <h2 class="title">五層做法，一層一個職責</h2>
+  <table class="grid">
+    <colgroup><col style="width: 17%"><col style="width: 53%"><col style="width: 30%"></colgroup>
+    <thead><tr><th>層</th><th>做法</th><th>擋什麼</th></tr></thead>
+    <tbody>
+      <tr><td><b>L0 固定範本</b></td><td>範本由程式持有，AI 只回傳每個佔位符的內容；表格數字由資料庫填</td><td>格式、版面、欄位順序</td></tr>
+      <tr><td><b>L1 生成約束</b></td><td>結構化輸出 schema（欄位、選項、必填）；溫度調低；提示詞用臺灣繁體</td><td>欄位跑掉、選項亂寫</td></tr>
+      <tr><td><b>L2 確定性檢查</b></td><td>schema 驗證、欄位規則、簡體字偵測、用語黑名單；空回應算失敗</td><td>漏網的格式與簡體字</td></tr>
+      <tr><td><b>L3 語意閘門</b></td><td>每欄位問是非題：有依據嗎？答對欄位嗎？有檢索以外的法規或數字嗎？</td><td>格式對但內容錯</td></tr>
+      <tr><td><b>L4 人工覆核</b></td><td>低信心、高風險一律人審，畫面標「AI 產出」</td><td>最後一道</td></tr>
+    </tbody>
+  </table>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B1-2 哪些事一定要寫進程式碼　·　B3-5 必做步驟寫成程式碼</p>
+  <aside class="notes">
+    <p>我分五層。L0 最有效：不要讓 AI 產生格式。範本是固定檔案，Word、HTML 或 Markdown，由程式持有；AI 只回傳每個佔位符要填的內容，程式負責填入、組裝、排版；表格裡的數字由資料庫填，不讓 AI 產生。這樣格式、版面、欄位順序完全由程式決定，AI 無法改動。我的簡報產生和採購案例都是這個做法。</p>
+    <p>L1 生成時用結構化輸出，把欄位、選項、必填寫在 schema 裡，而不是寫在提示詞裡；選項類欄位用列舉，溫度調低，提示詞和範例都用臺灣繁體。L2 是確定性檢查：schema 驗證、欄位規則、簡體字偵測、用語黑名單，空值和空回應一律視為失敗，不過就把錯誤訊息帶回去重試，最多兩次。這是因為我遇過同時送十六批約一成二回壞 JSON，也遇過推理吃掉輸出額度、可見回應是空的。</p>
+    <p>L3 才是模型閘門：每個欄位或每條主張各問一題是非題，內容是否有檢索結果支持、是否回答了這個欄位要的東西、是否出現檢索結果以外的法規或數字，再加一題嚴重度，依門檻放行、重試或轉人工。L4 是人工覆核，低信心或高風險，像對外發布、涉及裁處，一律人審，畫面標示 AI 產出。</p>
+    <p>L0 有兩個踩過的坑：產生器重建文件時不能蓋掉使用者手改的內容；轉換器把不認得的元件整塊略過卻驗證全綠，所以組裝完要檢查每個佔位符都有填、原稿文字都有進去。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="15" data-time="0:45">
+  <p class="kicker">會前問題 · Q3</p>
+  <h2 class="title">閘門有順序，簡體字偵測與轉換分開</h2>
+  <p class="timeline-line"><b>生成</b><span class="sep">→</span>程式檢查結構、欄位、簡體字、用語<span class="sep">→</span>不過就帶錯誤訊息重試，最多 2 次<span class="sep">→</span>仍不過轉人工</p>
+  <p class="timeline-line" style="margin-top: 14px;"><b>通過</b><span class="sep">→</span>語意閘門逐欄位判斷<span class="sep">→</span>無依據機率過門檻或嚴重度高，轉人工</p>
+  <p class="timeline-line" style="margin-top: 14px;"><b>放行</b><span class="sep">→</span>套固定範本<span class="sep">→</span>檢查每個佔位符都有填<span class="sep">→</span>標「AI 產出」</p>
+  <div class="cards c2" style="margin-top: 26px;">
+    <div class="card accent"><p class="label">偵測與轉換是兩件事</p>
+      <p>偵測：只看簡體專用字，命中就記位置</p>
+      <p>轉換用 OpenCC：已是繁體用 t2tw；s2twp 會改寫繁體，不當偵測器</p>
+      <p>一對多的字做回歸測試：后／後、干／乾／幹、台／臺、发／發／髮</p>
+    </div>
+    <div class="card"><p class="label">大陸用語要有例外</p>
+      <p>黑名單用詞組比對，另設白名單</p>
+      <p>例：「質量」該改「品質」，但空品的「質量濃度」是正確用法</p>
+      <p>換模型前，先用同一批題目量簡體字出現率</p>
+    </div>
+  </div>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B3-5 必做步驟寫成程式碼　·　B4-2 兩個一定會踩的坑：空回應與逾時</p>
+  <aside class="notes">
+    <p>閘門的順序是：先生成，程式檢查結構、欄位、簡體字和用語，不過就把錯誤訊息帶回去重試，最多兩次，再不過轉人工或回退。通過之後才進語意閘門，逐欄位判斷；任一欄位無依據的機率超過門檻，或嚴重度高，就轉人工。全部放行之後，才套固定範本，檢查覆蓋率，標示 AI 產出。</p>
+    <p>簡體字要分偵測和轉換兩件事。偵測是逐字比對，只看簡體專用字，轉成繁體後字形會變、而且不是繁體常用字的字，命中就記錄位置、算錯誤。轉換用 OpenCC：s2twp 會轉成臺灣正體並替換慣用詞，例如軟件變軟體，但不要拿它當偵測器，因為它也會改寫本來就是繁體的文字；輸入已是繁體應該用 t2tw。一對多的字要做回歸測試，像后和後、干乾幹、台和臺、发發髮。</p>
+    <p>用語黑名單要有例外。質量在一般語境是大陸用語，應為品質，但空品領域的質量濃度是正確用法；數據在監測數據也是臺灣常用詞。所以要用詞組比對，並維護白名單。環境領域這類詞特別多。</p>
+    <p>簡體字的根源是中文訓練資料以簡體為大宗，部分模型夾雜簡體比較常見；換模型之前，先用同一批題目量簡體字出現率。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="16" data-time="0:46">
+  <p class="kicker">會前問題 · Q4</p>
+  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>問題 4</b>　使用者問題可能涉及不同資料來源與工具，應如何提升意圖判斷的準確性，並能依問題動態判斷、調用不同工具及進行多輪互動，而非完全依賴預先設定的固定流程？</p></div>
+  <h2 class="title">意圖分四層，信心低就回問</h2>
+  <table class="grid">
+    <colgroup><col style="width: 20%"><col style="width: 50%"><col style="width: 30%"></colgroup>
+    <thead><tr><th>層</th><th>做法</th><th>適合</th></tr></thead>
+    <tbody>
+      <tr><td><b>1 規則</b></td><td>編號、條號、測站代碼的格式比對</td><td>明確、可列舉的請求</td></tr>
+      <tr><td><b>2 小型判斷模型</b></td><td>選項＝各意圖＋「都不是」</td><td>大多數請求</td></tr>
+      <tr><td><b>3 LLM</b></td><td>前兩層低信心才叫</td><td>少數模糊、複雜的請求</td></tr>
+      <tr><td><b>4 回問</b></td><td>給 2～3 個選項讓使用者點，不猜</td><td>信心低於門檻</td></tr>
+    </tbody>
+  </table>
+  <div class="callout" style="margin-top: 18px;"><p>42 筆人工標註：小模型先分流與全交 LLM 都答對 42 筆，token 少 <b>72%</b></p></div>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-7 判斷：小模型先分流，需要時才叫 LLM　·　B3-5 必做步驟寫成程式碼</p>
+  <aside class="notes">
+    <p>第四題。意圖判斷分層路由。第一層規則：正則、關鍵字、編號格式，像計畫編號、條號、測站代碼，適合明確、可列舉的請求。我在客服系統的第一層放了六組硬編碼規則。</p>
+    <p>第二層小型判斷模型：選項是各個意圖加上「都不是」；請求混合了多個意圖，就改成每個意圖各問一題是非題，再加一題複雜度。大多數請求在這層解決。第三層才是 LLM，前兩層低信心或都不是時才叫。第四層是回問：信心低於門檻，給兩三個選項讓使用者點，不要讓模型猜；我的客服機器人是信心低於零點六就開單轉人工。</p>
+    <p>實測：我的收件分類有四十二筆人工標註，小模型先分流、需要時才叫 LLM，和全部交給 LLM，都答對四十二筆，但前者 token 少百分之七十二。</p>
+    <p>兩個踩坑。一是加關鍵字反而變差：我的客服第一版有關鍵字計分層，跨場景撞字造成並列、長句永遠比對不到、通用詞搶走其他場景，後來加了「場景庫零重複關鍵字」的回歸測試。二是中文要實測，選項描述要寫清楚、互斥，並放進「都不是」。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="17" data-time="0:48">
+  <p class="kicker">會前問題 · Q4</p>
+  <h2 class="title">框架規劃路徑，LLM 判斷要什麼</h2>
+  <table class="grid">
+    <colgroup><col style="width: 22%"><col style="width: 32%"><col style="width: 46%"></colgroup>
+    <thead><tr><th>做法</th><th>誰決定下一步</th><th>問題</th></tr></thead>
+    <tbody>
+      <tr><td><b>固定流程</b></td><td>開發者事先畫好</td><td>僵硬，分支爆炸</td></tr>
+      <tr><td><b>框架控制流程</b></td><td>規劃器依手上資料</td><td>路徑可推導，可單元測試</td></tr>
+      <tr><td><b>LLM 全權決定</b></td><td>LLM 每步自己選</td><td>漏呼叫、重複呼叫、難測試</td></tr>
+    </tbody>
+  </table>
+  <table class="grid" style="margin-top: 18px;">
+    <thead><tr><th>語言</th><th>同類框架</th><th>流程怎麼控制</th></tr></thead>
+    <tbody>
+      <tr><td><b>Java</b></td><td>Embabel</td><td>能力寫成 action；規劃器依手上資料排步驟，每步重新規劃</td></tr>
+      <tr><td><b>Python</b></td><td>LangGraph、Pydantic AI</td><td>開發者定義狀態圖，LLM 在節點間選路</td></tr>
+      <tr><td><b>JS／TS</b></td><td>LangGraph.js、Mastra</td><td>狀態圖或 workflow，步驟可單元測試</td></tr>
+    </tbody>
+  </table>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B1-1 固定流程寫程式，開放任務交給 Agent　·　B1-3 架構選定後</p>
+  <aside class="notes">
+    <p>這題常被想成二選一：固定流程，或讓 LLM 自己決定呼叫哪些工具。前者僵硬，新增能力要改流程圖、分支會爆炸；後者彈性高，但漏呼叫、重複呼叫、工具太多選錯，不可預測、難測試。中間有第三條路：用框架控制流程，LLM 只負責判斷使用者要什麼，路徑由程式依規則規劃。</p>
+    <p>以 Java 的 Embabel 框架為例，它建立在 Spring Boot 上。開發者把每個能力寫成一個 action，用方法參數宣告需要什麼型別的輸入、回傳什麼型別，例如「查監測數據：測站加期間，回傳監測結果」；goal 是要達成的結果，例如空品原因分析報告。規劃器依 action 的前置條件和產出，自動排出從目前已有的資料到目標的路徑，每執行一步就依最新狀態重新規劃，資料型別本身就是規劃的路標。</p>
+    <p>LLM 只做判斷：選哪個目標，信心低於門檻就回問；以及 action 內部需要語意的部分，像擬檢索計畫、摘要、撰寫。工具也是每一步只給該步需要的，不是一次全丟給 LLM；寫入類動作要使用者確認。所以流程是動態的，但每一步都看得懂、測得到。</p>
+    <p>我在法律關係圖網站就是這樣做：七步流程，LLM 只產生檢索計畫、不給工具，雙軌檢索、去重、截斷由 Java 確定性執行。踩過的坑也提一下：依資料內容分叉會讓規劃器卡住，新流程分支要另建 agent；框架對所有例外都重試，逾時要在應用層加看門狗。</p>
+    <p>其他語言也有同類框架。Python 可以看 LangGraph 和 Pydantic AI，JavaScript、TypeScript 可以看 LangGraph.js 和 Mastra。差別在於：Embabel 由規劃器依手上資料自動排步驟；LangGraph 這類是開發者先定義狀態圖，LLM 只在節點之間選路。兩種都比讓 LLM 全權決定好測試，選哪個看團隊用的語言。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="18" data-time="0:49">
+  <p class="kicker">會前問題 · Q4</p>
+  <h2 class="title">多輪狀態放程式裡，工具依需要給</h2>
+  <div class="cards c2" style="margin-top: 10px;">
+    <div class="card accent"><p class="label">多輪互動</p>
+      <p>已確認的條件存成結構化狀態：縣市、年度、計畫</p>
+      <p>缺什麼問什麼，一次問一個；追問有上限</p>
+      <p>每輪顯示目前條件，讓使用者直接改</p>
+      <p>新問題與條件衝突，問延續還是重來</p>
+    </div>
+    <div class="card"><p class="label">工具很多時</p>
+      <p>先依意圖篩出工具群組，再交給 LLM</p>
+      <p>或每個工具問「有關嗎」，只留機率高的</p>
+      <p>外部資料源包成 MCP 工具，方便共用</p>
+      <p>授權與資料規則留在後端</p>
+    </div>
+  </div>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B1-1 固定流程寫程式，開放任務交給 Agent　·　B3-5 必做步驟寫成程式碼</p>
+  <aside class="notes">
+    <p>多輪互動，狀態放在程式裡。把對話中已確認的條件存成結構化狀態，也就是槽位，例如縣市是臺中市、期間是二〇二五、介質是空氣，而不是每輪把整段對話重送給模型去猜。目標需要的槽位沒填滿才追問，一次問一個、給選項；追問次數設上限，我的法律關係圖網站最多三輪，超過就用現有資訊作答並說明限制。每輪把目前的篩選條件顯示給使用者，讓使用者直接修改，比模型猜「去年」指哪一年可靠。新問題和目前槽位衝突時，問使用者要延續還是重來。</p>
+    <p>工具很多時，超過一、二十個，LLM 選錯的機率會上升。做法是先依意圖篩出相關的工具群組再交給 LLM；或者對每個工具問一題「這個工具和這個請求有關嗎」，用小型判斷模型的是非題，只留機率高的。外部資料源包成 MCP 工具，方便不同 Agent 共用；但正式的授權與資料規則留在後端。我的網站端有二十二個工具依頁面狀態註冊，而且刻意不做「送出」工具，Agent 只能填、不能送。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="19" data-time="0:50">
+  <p class="kicker">會前問題 · Q4</p>
+  <h2 class="title">環境部的例子：問題拆成六步</h2>
+  <div class="callout" style="margin-top: 0;"><p>「臺中大里去年空品為什麼比較差？有哪些相關計畫？」</p></div>
+  <table class="grid" style="margin-top: 22px;">
+    <colgroup><col style="width: 20%"><col style="width: 80%"></colgroup>
+    <tbody>
+      <tr><td><b>1 意圖判斷</b></td><td>Jev（小型是非題判斷模型）：監測數據查詢、報告檢索，兩個意圖都成立</td></tr>
+      <tr><td><b>2 抽條件</b></td><td>規則＋詞典：大里區→臺中市、空品區、最近測站；去年→ 2025</td></tr>
+      <tr><td><b>3 查數據</b></td><td>程式 action：查監測數據、算超標日數</td></tr>
+      <tr><td><b>4 找報告</b></td><td>action：metadata 過濾（臺中、空氣、近 3 年、定稿）後雙軌檢索</td></tr>
+      <tr><td><b>5 查法規</b></td><td>需要時才做，查現行條文</td></tr>
+      <tr><td><b>6 綜合與把關</b></td><td>LLM 只能引用步驟 3～5 並附出處；閘門把關，低信心轉人工</td></tr>
+    </tbody>
+  </table>
+  <p class="src" style="color: var(--text-2);">詳見／對應講座：B1-1 固定流程寫程式，開放任務交給 Agent　·　B2-7 小模型先分流</p>
+  <aside class="notes">
+    <p>用環境部的場景走一遍。使用者問：「臺中大里去年空品為什麼比較差？有哪些相關計畫？」</p>
+    <p>步驟一，意圖判斷：Jev 對兩個意圖各問一題，監測數據查詢和報告檢索都成立。步驟二，抽條件：規則加詞典，把大里區對到臺中市、空品區和最近的測站，去年對到二〇二五。步驟三，查數據：這是程式的 action，從環境資料開放平臺查監測數據、算超標日數。步驟四，找報告：另一個 action，用 metadata 過濾臺中、空氣、近三年、定稿，再雙軌檢索，資料來源是剛剛第一、二題講的專案報告索引。步驟五，需要時查現行法規條文。步驟六，綜合：LLM 只能引用步驟三到五的結果並附出處，再過第三題的格式與語意閘門，低信心轉人工。</p>
+    <p>步驟三到五的順序與要不要做，由規劃器依「目前手上有沒有測站、有沒有期間」決定；使用者沒說期間，就在步驟二追問。這就是動態，但每一步都是看得懂、測得到的程式。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="20" data-time="0:52">
+  <p class="kicker">參考 · 延伸題 甲</p>
+  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>延伸題 甲</b>　Agent 要開放哪些工具？哪些動作一定要人核准？</p></div>
+  <h2 class="title">工具給最少，最後一步留給人</h2>
+  <ul class="points compact">
+    <li>固定流程寫成程式；開放式、多步驟任務才交給 Agent</li>
+    <li>工具只開白名單、最小權限；每步驟設逾時上限</li>
+    <li><b>送出、刪除、中止、覆寫</b>一律由人核准</li>
+    <li>例：誰能看哪份監測資料，由程式擋，不是在提示詞寫「請勿洩漏」</li>
+  </ul>
+  <div class="callout">
+    <p>對應講座：B1-1、B1-2 架構怎麼選　·　A3-2 AI 工具本身也是攻擊面　·　B3-6「送出」只留給人按　·　B2-3 承辦人最終判斷</p>
+  </div>
+  <aside class="notes">
+    <p>第一題的回答：只開放任務需要的工具，必須保證做到的步驟寫進程式碼，不交給 Agent 決定。送出、刪除、中止、覆寫這類動作一律由人核准。我在法律關係圖網站就刻意不做「送出」工具，Agent 只能填、不能送。開發端也一樣：我遇過子代理未經同意中止一筆跑了兩小時的資料庫交易，所以審查代理一律唯讀，破壞性指令要人核准。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="21" data-time="0:53">
+  <p class="kicker">參考 · 延伸題 乙</p>
+  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>延伸題 乙</b>　標案裡用 AI Coding，開工前要和機關確認哪些事？</p></div>
+  <h2 class="title">開工前，先和機關確認三件事</h2>
+  <ul class="points compact">
+    <li>契約有沒有納入工程會的 <b>AI 特別聲明</b></li>
+    <li>哪些 AI 工具與模型經機關同意可用（陸製含地端都要避開）</li>
+    <li>AI 寫的程式碼算不算「AI 產出的履約標的」，要不要標明</li>
+    <li>哪些資料不能進 AI：例如未公開的監測數據、計畫成果草稿</li>
+  </ul>
+  <div class="callout">
+    <p>結論寫進治理檔。對應講座：A3-6 契約 AI 條款　·　A1-4 使用邊界　·　B2-3、B2-4 政府限制　·　S9-2 明天就能做的事</p>
+  </div>
+  <aside class="notes">
+    <p>第二題：開工前要確認三件事。契約有沒有納入工程會的特別聲明；哪些工具與模型經機關同意可用；AI 寫的程式碼算不算 AI 產出的履約標的，要不要事先同意並標明，這是我的解讀，請和機關確認。確認的結果寫進專案的治理檔，AI 每次開工都會先讀，不要等到驗收才發現不能用。以上不是法律意見，以契約與主管機關解釋為準。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="22" data-time="0:54">
+  <p class="kicker">參考 · 延伸題 丙</p>
+  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>延伸題 丙</b>　法規查詢的評測集怎麼建、放哪些題目？</p></div>
+  <h2 class="title">評測集從 30 題起步，先放易錯題</h2>
+  <ul class="points compact">
+    <li>人工標註 30 題起步；換模型、改提示詞都能一鍵重跑</li>
+    <li><b>母法＋授權辦法</b>：裁判費 77-13 條、空污法第 17 條費率</li>
+    <li>白話問法、條號精確查詢、應該拒答的題目</li>
+    <li>上線踩過的坑，轉成回歸題</li>
+  </ul>
+  <div class="callout">
+    <p>對應講座：B3-3 只查母法會答錯　·　B3-4 兩軌零重疊　·　B3-7 規則搬家時掉了　·　B2-8 怎麼評測　·　S9-2 30 題評測集</p>
+  </div>
+  <aside class="notes">
+    <p>第三題：先做一份人工標註的評測集，30 題就能起步。題目優先放已知會答錯的，像只查母法會答錯的裁判費、空污費費率；再放白話問法、條號精確查詢、應該拒答的題目。上線遇到的坑也轉成回歸題。我自己的法規系統還沒有引用正確率的量化評測，這是我的缺口。</p>
+  </aside>
+</section>
+
+<section class="slide" data-code="QA" data-page="23" data-time="0:56">
+  <p class="kicker">參考 · 延伸題 丁</p>
+  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>延伸題 丁</b>　機關沒有 GPU、資料又不能出機關，哪些 AI 功能可以先做？</p></div>
+  <h2 class="title">沒有 GPU，先上 LLM 以外的小模型</h2>
+  <ul class="points compact">
+    <li>CPU 不跑 LLM；檢索、分類分流、OCR、會後語音轉寫可以先上</li>
+    <li>小模型先分流，再叫 LLM：實測 token 少 72%</li>
+    <li>擋掉的量越多，之後要買的 GPU 越少</li>
+    <li>選非陸製模型，換完要重跑評測</li>
+  </ul>
+  <div class="callout">
+    <p>對應講座：B2-4 換得掉但有代價　·　B2-5 先變成文字　·　B2-6 先撈再排　·　B2-7 小模型先分流　·　B2-8 只有 CPU 那一欄</p>
+  </div>
+  <aside class="notes">
+    <p>第四題：CPU 不跑 LLM，但 LLM 以外的小模型都可以先在機關內上線：法規與計畫報告的檢索、陳情或收件的分類分流、掃描檔 OCR、會議錄音的會後批次轉寫。先用小模型擋掉能擋的請求，再依實際要送給 LLM 的量評估要不要買 GPU。模型要選非陸製的，換完重跑評測，準確度通常會掉一些。</p>
+  </aside>
+</section>
+
+<section class="slide split cover" data-code="QA" data-page="24" data-time="0:57">
+  <div class="bg-figure shift"><img src="media/ill/I01-tools-change-method-stays.jpg" alt=""></div>
+  <div class="text-col">
+    <p class="kicker">諮詢交流 · 轉場</p>
+    <h1 class="title">交流先到這裡</h1>
+    <p class="subtitle" style="margin-top: 30px;">接下來進入講座：<br>從輔助寫程式到 AI 原生系統。</p>
+    <p class="by">還有問題，講座中或會後都歡迎再提</p>
+  </div>
+  <aside class="notes">
+    <p>問題先回答到這裡，謝謝大家的提問。</p>
+    <p>剛才的回答其實都扣著同一個主張：AI 的產出先當成不可信，再用證據換取信任。接下來的講座，就是把這句話拆開來講，從我們自己怎麼用 AI 寫程式，講到怎麼把 AI 放進系統裡當元件。</p>
+    <p>（依時間決定：有排休息就先休息 10 分鐘；時間不多就直接開始，講座挑重點講。）</p>
+  </aside>
+</section>
+<!-- ===== 03-BREAK.html ===== -->
+<!-- 中場休息（1:00–1:10，1 頁） -->
+
+<section class="slide split" data-code="BREAK" data-page="1" data-time="1:00">
+  <div class="bg-figure"><img src="media/ill/I12-coffee-break.jpg" alt=""></div>
+  <div class="text-col" style="width: 640px;">
+    <p class="kicker">中場休息</p>
+    <h2 class="title">休息一下<br><span class="em">10 分鐘後回來</span></h2>
+    <p class="subtitle">回來後進入講座：<br>從輔助寫程式到 AI 原生系統。</p>
+    <div class="callout">
+      <p>沒問到的問題先記下，<b>會後再交流</b></p>
+    </div>
+  </div>
+  <aside class="notes">
+    <p>（這一頁視現場狀況使用：時間不夠就直接按下一頁，跳過休息。）</p>
+    <p>好，簡報和問答到這裡。我們休息 10 分鐘，大家可以起來走一走、倒杯水。</p>
+    <p>回來之後進入講座，先講我們怎麼讓 AI 寫的程式值得信任，再講怎麼讓 AI 成為系統裡可信的元件。剛才還沒問到的問題，請先記下來，會後再找我交流。10 分鐘後我們準時繼續。</p>
+  </aside>
+</section>
+<!-- ===== 04-S0.html ===== -->
+<!-- S0 開場：從人工撰寫到 AI 全權開發的三年（1:10–1:14，5 頁） -->
+
+<section class="slide" data-code="S0" data-page="1" data-time="1:10">
   <p class="kicker">開場 · 公開服務</p>
   <h2 class="title">今天提到的服務，會後都能自己試</h2>
   <table class="grid" style="margin-top: 30px;">
@@ -82,12 +655,12 @@
   </table>
   <p class="src">只列有正式網址且仍在運作的服務（2026-11-04 確認）；Mini-PLM、任務管理、客服機器人、AI 記憶庫、標案估價為內部系統，不公開</p>
   <aside class="notes">
-    <p>這一頁列的是今天會提到、而且大家會後可以自己上去試的服務。法規技能包是開源的，介紹網站上有安裝方式；法律關係圖網站可以直接描述一個糾紛試試看；字導字演和知識島是我的個人作品；最後一個是我 YouTube 上把市長辯論做成分析影片的教學。</p>
+    <p>好，我們進入講座。這一頁列的是今天會提到、而且大家會後可以自己上去試的服務。法規技能包是開源的，介紹網站上有安裝方式；法律關係圖網站可以直接描述一個糾紛試試看；字導字演和知識島是我的個人作品；最後一個是我 YouTube 上把市長辯論做成分析影片的教學。</p>
     <p>其他像 Mini-PLM、任務管理、客服機器人、記憶庫、標案估價，都是公司內部或客戶的系統，沒辦法公開，今天會用截圖和數字來講。</p>
   </aside>
 </section>
 
-<section class="slide" data-code="S0" data-page="4" data-time="0:01">
+<section class="slide" data-code="S0" data-page="2" data-time="1:10">
   <p class="kicker">開場 · Mini-PLM 的三年</p>
   <h2 class="title">一套企業系統，從人工寫到 AI 寫</h2>
   <p class="lead" style="margin-top: 6px;">Mini-PLM：我公司內部管理產品資料、圖面與設計變更的系統，後面會多次拿它當例子</p>
@@ -105,7 +678,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="S0" data-page="5" data-time="0:03">
+<section class="slide" data-code="S0" data-page="3" data-time="1:11">
   <p class="kicker">開場 · 速度差</p>
   <h2 class="title">最有感的一次：表單設定改成拖拉設計器</h2>
   <div class="media-row" style="margin-top: 30px; align-items: stretch;">
@@ -133,7 +706,7 @@
   </aside>
 </section>
 
-<section class="slide split wide-text" data-code="S0" data-page="6" data-time="0:05">
+<section class="slide split wide-text" data-code="S0" data-page="4" data-time="1:12">
   <div class="bg-figure"><img src="media/ill/I02-trust-terraces.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">開場 · 信任曲線</p>
@@ -154,7 +727,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="S0" data-page="7" data-time="0:07">
+<section class="slide" data-code="S0" data-page="5" data-time="1:13">
   <p class="kicker">開場 · 互動 1</p>
   <h2 class="title">先看看大家的現況</h2>
   <div class="poll">
@@ -177,10 +750,10 @@
     <p>上半場講寫程式時怎麼做到這件事，下半場講 AI 放進系統以後怎麼做到。</p>
   </aside>
 </section>
-<!-- ===== 02-S1.html ===== -->
-<!-- S1 這一年變了什麼：AI 開發工具與技術的發展（0:08–0:13，3 頁） -->
+<!-- ===== 05-S1.html ===== -->
+<!-- S1 這一年變了什麼：AI 開發工具與技術的發展（1:14–1:16，3 頁） -->
 
-<section class="slide split" data-code="S1" data-page="1" data-time="0:08">
+<section class="slide split" data-code="S1" data-page="1" data-time="1:14">
   <div class="bg-figure shift"><img src="media/ill/I03-extensible-core.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">這一年的變化 · 開發端</p>
@@ -210,7 +783,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="S1" data-page="2" data-time="0:10">
+<section class="slide" data-code="S1" data-page="2" data-time="1:15">
   <p class="kicker">這一年的變化 · 產品端</p>
   <h2 class="title">產品端：模型輸出，<span class="em">程式可以直接驗證</span></h2>
   <div style="min-height: 640px; display: flex; flex-direction: column; justify-content: center;">
@@ -247,7 +820,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="S1" data-page="3" data-time="0:11">
+<section class="slide" data-code="S1" data-page="3" data-time="1:15">
   <p class="kicker">這一年的變化 · 治理端</p>
   <h2 class="title">治理端：這些會變成你們標案的需求</h2>
   <div class="hero-row" style="margin-top: 70px;">
@@ -272,10 +845,10 @@
     <p>這一段到這裡結束。開發端補了周邊機制，產品端輸出可以被程式驗證，治理端把要求寫進標案。接下來進入上半場的第一個主題：規則。</p>
   </aside>
 </section>
-<!-- ===== 03-A1.html ===== -->
-<!-- A1 規則：治理檔、任務分級與使用邊界（0:13–0:19，4 頁） -->
+<!-- ===== 06-A1.html ===== -->
+<!-- A1 規則：治理檔、任務分級與使用邊界（1:16–1:20，4 頁） -->
 
-<section class="slide" data-code="A1" data-page="1" data-time="0:12">
+<section class="slide" data-code="A1" data-page="1" data-time="1:16">
   <p class="kicker">規則 · 治理檔</p>
   <h2 class="title">治理檔裡的三條規則原文</h2>
   <p class="lead" style="margin-top: 14px;">治理檔：放在專案裡、AI 每次開工都會先讀的規則檔，例如 <span class="hl">CLAUDE.md</span>、<span class="hl">AGENTS.md</span></p>
@@ -312,7 +885,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A1" data-page="2" data-time="0:13">
+<section class="slide" data-code="A1" data-page="2" data-time="1:16">
   <p class="kicker">規則 · 任務分級</p>
   <h2 class="title">流程的輕重，<span class="em">跟著風險走</span></h2>
   <table class="grid" style="margin-top: 34px; font-size: 36px;">
@@ -337,7 +910,7 @@
   </aside>
 </section>
 
-<section class="slide split" data-code="A1" data-page="3" data-time="0:15">
+<section class="slide split" data-code="A1" data-page="3" data-time="1:18">
   <div class="bg-figure"><img src="media/ill/I04-spec-plan-tiles.jpg" alt="" style="transform: translateX(18%);"></div>
   <div class="text-col">
     <p class="kicker">規則 · spec＋plan</p>
@@ -364,7 +937,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A1" data-page="4" data-time="0:16">
+<section class="slide" data-code="A1" data-page="4" data-time="1:18">
   <p class="kicker">規則 · 教訓與使用邊界</p>
   <h2 class="title">兩個教訓，一段<span class="em">使用邊界</span></h2>
   <div class="cards c2" style="margin-top: 26px;">
@@ -395,10 +968,10 @@
     <p>這一段帶走一句話：治理檔至少寫清楚兩件事，怎樣才算完成，以及什麼不能給 AI。</p>
   </aside>
 </section>
-<!-- ===== 04-A2.html ===== -->
-<!-- A2 驗證：AI 寫的測試也要被測（0:19–0:26，5 頁） -->
+<!-- ===== 07-A2.html ===== -->
+<!-- A2 驗證：AI 寫的測試也要被測（1:20–1:24，5 頁） -->
 
-<section class="slide split wide-text" data-code="A2" data-page="1" data-time="0:18">
+<section class="slide split wide-text" data-code="A2" data-page="1" data-time="1:20">
   <div class="bg-figure"><img src="media/ill/I05-fake-green-light.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">驗證</p>
@@ -427,7 +1000,7 @@
   </aside>
 </section>
 
-<section class="slide split" data-code="A2" data-page="2" data-time="0:20">
+<section class="slide split" data-code="A2" data-page="2" data-time="1:21">
   <div class="bg-figure"><img src="media/ill/I24-mutation-red-light.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">驗證 · 對策（一）</p>
@@ -452,7 +1025,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A2" data-page="3" data-time="0:21">
+<section class="slide" data-code="A2" data-page="3" data-time="1:21">
   <p class="kicker">驗證 · 對策（二）</p>
   <h2 class="title">功能有沒有掛上，<span class="em">要實際操作才知道</span></h2>
   <div class="media-row" style="margin-top: 30px; align-items: stretch;">
@@ -478,7 +1051,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A2" data-page="4" data-time="0:22">
+<section class="slide" data-code="A2" data-page="4" data-time="1:22">
   <p class="kicker">驗證 · 對策（三）</p>
   <h2 class="title">讓 CI 和終審<span class="em">替你守門</span></h2>
   <div class="cards c2" style="margin-top: 30px;">
@@ -506,7 +1079,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A2" data-page="5" data-time="0:23">
+<section class="slide" data-code="A2" data-page="5" data-time="1:22">
   <p class="kicker">驗證 · 互動 2</p>
   <h2 class="title">要 AI 補測試的<span class="em">三種提示詞</span></h2>
   <!-- 只留三張提示詞卡片，題目放在最下方，投票選項直接對應卡片的 A／B／C -->
@@ -534,7 +1107,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A2" data-page="6" data-time="0:24">
+<section class="slide" data-code="A2" data-page="6" data-time="1:23">
   <p class="kicker">驗證 · 互動 2 解答</p>
   <h2 class="title">答案是 C：<span class="em">要的是證據，不是綠燈</span></h2>
   <div style="display: flex; gap: 40px; align-items: stretch; margin-top: 18px;">
@@ -578,10 +1151,10 @@
     <p>這四點我已經寫進自己的 CLAUDE.md 規則裡，不必每次重打。上半場到這裡，我們有了規則和驗證。下一段講資安，是企業最需要注意、卻最容易被忽略的一段。</p>
   </aside>
 </section>
-<!-- ===== 05-A3.html ===== -->
-<!-- A3 資安：最容易被忽略的一段，與兩個加強做法（0:26–0:36，6 頁）。只講防禦面，漏洞只講類型與修法 -->
+<!-- ===== 08-A3.html ===== -->
+<!-- A3 資安：最容易被忽略的一段，與兩個加強做法（1:24–1:29，6 頁）。只講防禦面，漏洞只講類型與修法 -->
 
-<section class="slide split" data-code="A3" data-page="1" data-time="0:25">
+<section class="slide split" data-code="A3" data-page="1" data-time="1:24">
   <div class="bg-figure shift"><img src="media/ill/I06-security-iceberg.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">資安</p>
@@ -604,7 +1177,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A3" data-page="2" data-time="0:27">
+<section class="slide" data-code="A3" data-page="2" data-time="1:25">
   <p class="kicker">資安</p>
   <h2 class="title">AI 工具本身也是攻擊面</h2>
   <div class="cards c3" style="margin-top: 44px;">
@@ -651,7 +1224,7 @@
   </aside>
 </section>
 
-<section class="slide split wide-text" data-code="A3" data-page="3" data-time="0:28">
+<section class="slide split wide-text" data-code="A3" data-page="3" data-time="1:25">
   <div class="bg-figure shift-more"><img src="media/ill/I07-four-inspectors.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">資安 · 加強一</p>
@@ -678,7 +1251,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A3" data-page="4" data-time="0:29">
+<section class="slide" data-code="A3" data-page="4" data-time="1:26">
   <p class="kicker">資安 · 加強二</p>
   <h2 class="title">安全套件＋依規格的權限測試</h2>
   <div class="media-row" style="margin-top: 28px; align-items: stretch;">
@@ -716,7 +1289,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A3" data-page="5" data-time="0:31">
+<section class="slide" data-code="A3" data-page="5" data-time="1:27">
   <p class="kicker">資安 · 政府對委外系統的要求</p>
   <h2 class="title">政府本來就要求的檢測</h2>
   <table class="grid" style="margin-top: 24px;">
@@ -750,7 +1323,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A3" data-page="6" data-time="0:33">
+<section class="slide" data-code="A3" data-page="6" data-time="1:28">
   <p class="kicker">資安 · 標案契約</p>
   <h2 class="title">標案契約裡的 AI 條款</h2>
   <p class="subtitle" style="margin-bottom: 8px;">工程會「特別聲明」範本：<b>機關納入個案契約後</b>才適用</p>
@@ -785,10 +1358,10 @@
     <p>頁尾再唸一次：以上不是法律意見，以機關契約與主管機關的解釋為準。好，資安這一段講完，接下來是上半場最後一段。</p>
   </aside>
 </section>
-<!-- ===== 06-A4.html ===== -->
-<!-- A4 越用越強的工具：記憶、瀏覽器自動化、容器化測試（上半場收束）（0:36–0:44，6 頁） -->
+<!-- ===== 09-A4.html ===== -->
+<!-- A4 越用越強的工具：記憶、瀏覽器自動化、容器化測試（上半場收束）（1:29–1:34，6 頁） -->
 
-<section class="slide split wide-text" data-code="A4" data-page="1" data-time="0:34">
+<section class="slide split wide-text" data-code="A4" data-page="1" data-time="1:29">
   <div class="bg-figure shift"><img src="media/ill/I08-five-drawers.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">越用越強的工具</p>
@@ -812,7 +1385,7 @@
   </aside>
 </section>
 
-<section class="slide split" data-code="A4" data-page="2" data-time="0:35">
+<section class="slide split" data-code="A4" data-page="2" data-time="1:29">
   <!-- 右側放 deep-memory 記憶儀表板實際截圖 -->
   <figure class="shot-wrap" style="position: absolute; right: 70px; top: 260px; width: 960px;">
     <div class="shot" style="height: 440px;"><img src="media/shot/deep-memory/01-memory-dashboard-graph.jpg" alt="deep-memory 記憶儀表板：知識分類、專案、關鍵字的關聯網絡圖"></div>
@@ -837,7 +1410,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A4" data-page="3" data-time="0:37">
+<section class="slide" data-code="A4" data-page="3" data-time="1:30">
   <p class="kicker">工具 · Playwright（一）</p>
   <h2 class="title">測試，越寫越多就越強</h2>
   <!-- 每個數字下方補上該系統的截圖，讓聽眾看到「被測的是什麼系統」；數字縮小以騰出空間 -->
@@ -876,7 +1449,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="A4" data-page="4" data-time="0:38">
+<section class="slide" data-code="A4" data-page="4" data-time="1:31">
   <p class="kicker">工具 · Playwright（二）</p>
   <h2 class="title">放進程式裡，處理真瀏覽器的網站</h2>
   <div class="cards c2" style="margin-top: 40px; align-items: stretch;">
@@ -917,7 +1490,7 @@
   </aside>
 </section>
 
-<section class="slide split" data-code="A4" data-page="5" data-time="0:40">
+<section class="slide split" data-code="A4" data-page="5" data-time="1:32">
   <div class="bg-figure"><img src="media/ill/I10-island-dome.jpg" alt=""></div>
   <div class="text-col" style="width: 680px;">
     <p class="kicker">工具 · 部署環境</p>
@@ -937,7 +1510,7 @@
   </aside>
 </section>
 
-<section class="slide split" data-code="A4" data-page="6" data-time="0:41">
+<section class="slide split" data-code="A4" data-page="6" data-time="1:33">
   <div class="bg-figure shift"><img src="media/ill/I11-containers-port.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">工具 · Docker＋Playwright</p>
@@ -957,32 +1530,13 @@
     <p>後端的整合測試，我用 Testcontainers 起真的 PostgreSQL、pgvector、Redis，不用假的資料庫。其中一個產品有 86 個檔案用到 Testcontainers。E2E 則是用 Playwright 去打真的前端和後端，資料庫跑在本機的容器裡，這是 Mini-PLM 的做法，先啟動專用的 PostgreSQL 容器，再跑 Playwright。</p>
     <p>測試資料庫放在容器裡，還有一個好處：它也是「worktree 的 .env 指到正式庫、遷移被套進正式資料庫」這類事故的對策。測試永遠連到自己的容器，不會碰到正式的資料。</p>
     <p>再來，把 Playwright 和瀏覽器一起裝進 Docker 映像檔，版本一致、CI 可以重現。容器裡跑瀏覽器要處理殭屍程序，要用 init 程序來回收，不然跑久了會一堆殘留。</p>
-    <p>好，上半場收束，回到我開場的主張：這些工具之所以越用越強，是因為每一次的證據，記憶、測試、腳本，都留了下來。AI 的產出先當成不可信，證據一點一點累積，信任才會一階一階給。大家休息一下，下半場我們把 AI 放進系統裡。</p>
+    <p>好，上半場收束，回到我開場的主張：這些工具之所以越用越強，是因為每一次的證據，記憶、測試、腳本，都留了下來。AI 的產出先當成不可信，證據一點一點累積，信任才會一階一階給。接著進下半場，我們把 AI 放進系統裡。</p>
   </aside>
 </section>
-<!-- ===== 07-BREAK.html ===== -->
-<!-- 中場休息（0:44–0:48，1 頁） -->
+<!-- ===== 10-B1.html ===== -->
+<!-- B1 架構怎麼選：程式框架與 Agent＋MCP（1:34–1:37，3 頁） -->
 
-<section class="slide split" data-code="BREAK" data-page="1" data-time="0:42">
-  <div class="bg-figure"><img src="media/ill/I12-coffee-break.jpg" alt=""></div>
-  <div class="text-col" style="width: 640px;">
-    <p class="kicker">中場休息</p>
-    <h2 class="title">休息一下<br><span class="em">10 分鐘後回來</span></h2>
-    <p class="subtitle">下半場：AI 從寫程式的工具，<br>變成系統裡的元件。</p>
-    <div class="callout">
-      <p>有問題先記下來，<b>最後統一 Q&amp;A</b></p>
-    </div>
-  </div>
-  <aside class="notes">
-    <p>好，上半場到這裡。我們休息 10 分鐘，大家可以起來走一走、倒杯水。</p>
-    <p>下半場我們換一個角度：上半場的 AI 是寫程式的工具，下半場的 AI 是系統裡的元件，但原則不變，輸出一樣先當成不可信。</p>
-    <p>如果剛剛有任何問題，請先記下來。演講中間我不會停下來答題，所有問題都留到最後的 Q&amp;A 時間一起回答。10 分鐘後我們準時繼續。</p>
-  </aside>
-</section>
-<!-- ===== 08-B1.html ===== -->
-<!-- B1 架構怎麼選：程式框架與 Agent＋MCP（0:48–0:52，3 頁） -->
-
-<section class="slide split wide-text" data-code="B1" data-page="1" data-time="0:52">
+<section class="slide split wide-text" data-code="B1" data-page="1" data-time="1:34">
   <!-- 插圖縮小放右上，下方留整排給兩張比較卡片 -->
   <div class="bg-figure" style="inset: 0 0 auto auto; width: 1100px; height: 580px;"><img src="media/ill/I13-rails-vs-garden.jpg" alt=""></div>
   <div class="text-col">
@@ -1011,7 +1565,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B1" data-page="2" data-time="0:54">
+<section class="slide" data-code="B1" data-page="2" data-time="1:35">
   <p class="kicker">架構 · 守住底線</p>
   <h2 class="title">哪些事一定要寫進程式碼</h2>
   <div class="cards" style="grid-template-columns: 1.6fr 1fr; align-items: stretch; margin-top: 56px;">
@@ -1040,7 +1594,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B1" data-page="3" data-time="0:55">
+<section class="slide" data-code="B1" data-page="3" data-time="1:36">
   <p class="kicker">架構 · 轉場</p>
   <h2 class="title">架構選定之後，下一個問題是…</h2>
   <div class="cards c2" style="margin-top: 90px;">
@@ -1064,10 +1618,10 @@
     <p>這兩個問題決定了後面所有的選擇，所以下一段，我先帶大家看模型有哪幾類，再看政府場域的限制，最後看地端和沒有 GPU 的時候能怎麼做。</p>
   </aside>
 </section>
-<!-- ===== 09-B2.html ===== -->
-<!-- B2 模型類型：每個情境需要哪幾類模型，政府場域怎麼選（0:52–1:01，8 頁） -->
+<!-- ===== 11-B2.html ===== -->
+<!-- B2 模型類型：每個情境需要哪幾類模型，政府場域怎麼選（1:37–1:42，8 頁） -->
 
-<section class="slide" data-code="B2" data-page="1" data-time="0:56">
+<section class="slide" data-code="B2" data-page="1" data-time="1:37">
   <p class="kicker">模型類型</p>
   <h2 class="title">輸入 × 輸出，每一格是一類模型</h2>
   <figure class="chart-dark" style="margin-top: 14px;">
@@ -1078,13 +1632,13 @@
     <p>要把 AI 放進產品，第一個問題是「這件事該用哪一類模型」，而不是「哪一家最新」。類型和它的特性，一兩年內不太會變；產品的版本號，大概一個月就變一次。所以接下來我依類型講，產品名字只當例子。</p>
     <p>這張圖是整段的地圖。橫的是輸出：文字、向量、分數或標籤、語音、圖片與影片；直的是輸入：文字、圖片與 PDF、音訊、影片。每一格就是一類模型，亮藍色是今天要講的重點。</p>
     <p>左上角是大家最熟的 LLM，文字進、文字出。它右邊的 Embedding 是文字變向量，再右邊是 Rerank 和小型判斷模型，輸出的是分數或標籤。圖片和 PDF 進來，有多模態理解和 OCR；音訊進來，最常用的是 ASR，也就是語音轉文字。</p>
-    <p>TTS 和影像、影片生成我只點名，今天不展開，有興趣的可以在交流時問我。</p>
+    <p>TTS 和影像、影片生成我只點名，今天不展開，有興趣的可以會後問我。</p>
     <p>另外提醒各位：環境監測的數值、時序資料，像空品、水質的預測與異常偵測，不在這張圖裡。那類問題用統計或傳統機器學習比較準、也比較好解釋；LLM 適合放在後面，負責把結果解讀成文字、寫成摘要。</p>
     <p>後面我把這張圖歸成四群，各用一頁：產生文字、轉成文字、檢索、判斷。</p>
   </aside>
 </section>
 
-<section class="slide" data-code="B2" data-page="2" data-time="0:57">
+<section class="slide" data-code="B2" data-page="2" data-time="1:37">
   <p class="kicker">模型 · 產生文字：LLM</p>
   <h2 class="title">LLM 有三個屬性，不是三個產品</h2>
   <div class="cards c3" style="margin-top: 60px;">
@@ -1119,7 +1673,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B2" data-page="3" data-time="0:58">
+<section class="slide" data-code="B2" data-page="3" data-time="1:38">
   <!-- 插圖縮小放右上，下方留給兩欄對照表 -->
   <div class="bg-figure" style="inset: 0 0 auto auto; width: 780px; height: 380px;"><img src="media/ill/I14-gov-data-boundary.jpg" alt=""></div>
   <div style="position: relative; z-index: 2; width: 1000px;">
@@ -1165,7 +1719,7 @@
   </aside>
 </section>
 
-<section class="slide split" data-code="B2" data-page="4" data-time="0:59">
+<section class="slide split" data-code="B2" data-page="4" data-time="1:38">
   <!-- 插圖縮小放右側，左邊文字欄加寬 -->
   <div class="bg-figure" style="inset: 110px 0 auto auto; width: 920px; height: 640px;"><img src="media/ill/I15-small-models-cpu-gpu.jpg" alt="" style="-webkit-mask-image: radial-gradient(ellipse 58% 60% at 58% 52%, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse 58% 60% at 58% 52%, #000 55%, transparent 100%);"></div>
   <div class="text-col" style="width: 920px;">
@@ -1194,11 +1748,11 @@
     <p>第三件事，替代是有代價的。這是我自己在客服意圖分流做的 reranker 評測，42 題、只用 CPU：陸製的 BGE 多語版，第一名命中率 96.7%；換成非陸製的多語 cross-encoder，速度最快，每題大約 0.3 秒，但命中率掉到 86.7% 到 93.3%，中文像「審核進度」這種題目大量低分。所以換模型不是改一行設定，要重跑評測集、重新校準門檻；差距補不回來，就改成「高分直接命中、中間交給 LLM、低分轉一般問答」的分段做法。</p>
     <p>最後是沒有 GPU 的情況。我的原則是：CPU 不跑 LLM，包括能讀圖的多模態 LLM。LLM 放 GPU 伺服器，或是資料可以出機關時用雲端。CPU 負責 LLM 以外的小模型：嵌入、重排序、BERT 類的分類器、OCR、小尺寸的語音辨識，這些只有數千萬到數億參數，CPU 跑得動。</p>
     <p>它們還有一個好處：小模型先做檢索、分流、轉錄、OCR，高分的直接命中，不必叫 LLM，CPU 擋掉的請求越多，GPU 的需求就越小。所以建議先上 CPU 這一段，再依實際送給 LLM 的量，評估要不要買 GPU。</p>
-    <p>調校上兩個經驗：int8 量化省記憶體和時間，但分數會小幅漂移，門檻要用部署的格式重新校準；執行緒設成實體核心數，我的 reranker 因此從每題 0.9 到 1.9 秒，降到 0.6 到 1.1 秒。語音辨識我在一般筆電、只用 CPU 測過，小尺寸的處理時間大約是音檔長度的四分之一，大尺寸比音檔還長，而且輸出退步，所以只適合會後批次。這兩張實測圖表，交流時想看再給大家。</p>
+    <p>調校上兩個經驗：int8 量化省記憶體和時間，但分數會小幅漂移，門檻要用部署的格式重新校準；執行緒設成實體核心數，我的 reranker 因此從每題 0.9 到 1.9 秒，降到 0.6 到 1.1 秒。語音辨識我在一般筆電、只用 CPU 測過，小尺寸的處理時間大約是音檔長度的四分之一，大尺寸比音檔還長，而且輸出退步，所以只適合會後批次。這兩張實測圖表，會後想看再給大家。</p>
   </aside>
 </section>
 
-<section class="slide" data-code="B2" data-page="5" data-time="1:01">
+<section class="slide" data-code="B2" data-page="5" data-time="1:39">
   <p class="kicker">模型 · 轉成文字</p>
   <h2 class="title">圖片、PDF、聲音，先變成文字</h2>
   <div class="cards c2" style="margin-top: 30px;">
@@ -1231,7 +1785,7 @@
   </aside>
 </section>
 
-<section class="slide split wide-text" data-code="B2" data-page="6" data-time="1:02">
+<section class="slide split wide-text" data-code="B2" data-page="6" data-time="1:40">
   <div class="bg-figure"><img src="media/ill/I16-retrieval-funnel.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">模型 · 檢索</p>
@@ -1255,7 +1809,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B2" data-page="7" data-time="1:03">
+<section class="slide" data-code="B2" data-page="7" data-time="1:40">
   <p class="kicker">模型 · 判斷</p>
   <h2 class="title">判斷：小模型先分流，需要時才叫 LLM</h2>
   <p class="timeline-line">規則<span class="sep">→</span>小型判斷模型<span class="sep">→</span>必要時才叫 LLM；低信心轉人工</p>
@@ -1272,7 +1826,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B2" data-page="8" data-time="1:04">
+<section class="slide" data-code="B2" data-page="8" data-time="1:41">
   <p class="kicker">模型 · 比較與收束</p>
   <h2 class="title">模型是設定，<span class="em">不是程式碼</span></h2>
   <table class="grid" style="margin-top: 6px;">
@@ -1304,10 +1858,10 @@
     <p>（看結果，回應一兩句。我自己的影片校稿工具，一個產品就用了四類：LLM 校稿、ASR 轉逐字稿、TTS 語音替換、小型判斷模型斷句。）</p>
   </aside>
 </section>
-<!-- ===== 10-B3.html ===== -->
-<!-- B3 六個情境與兩個深入案例（1:01–1:17，10 頁）：案例一法規知識應用 6 頁、案例二政府採購網估價系統 3 頁 -->
+<!-- ===== 12-B3.html ===== -->
+<!-- B3 六個情境與兩個深入案例（1:42–1:51，10 頁）：案例一法規知識應用 6 頁、案例二政府採購網估價系統 3 頁 -->
 
-<section class="slide" data-code="B3" data-page="1" data-time="1:05">
+<section class="slide" data-code="B3" data-page="1" data-time="1:42">
   <p class="kicker">情境與案例 · 六個情境</p>
   <h2 class="title">六個情境，各配一組模型與檢查</h2>
   <!-- 插圖 I17 只取六個圖示的橫帶，邊緣淡出與頁面底色融合 -->
@@ -1333,7 +1887,7 @@
   </aside>
 </section>
 
-<section class="slide split" data-code="B3" data-page="2" data-time="1:07">
+<section class="slide split" data-code="B3" data-page="2" data-time="1:43">
   <div class="bg-figure shift"><img src="media/ill/I28-skill-toolkit-law.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">情境與案例 · 案例一 技能包</p>
@@ -1357,7 +1911,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B3" data-page="3" data-time="1:08">
+<section class="slide" data-code="B3" data-page="3" data-time="1:43">
   <p class="kicker">情境與案例 · 案例一 易錯點</p>
   <h2 class="title">只查母法，會答錯</h2>
   <p class="subtitle" style="margin-bottom: 0;">請求 30 萬元，裁判費多少？（民訴 77-13；子法＝依授權訂的標準）</p>
@@ -1391,7 +1945,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B3" data-page="4" data-time="1:10">
+<section class="slide" data-code="B3" data-page="4" data-time="1:45">
   <p class="kicker">情境與案例 · 案例一 雙軌檢索</p>
   <h2 class="title">兩軌結果零重疊，所以要並行</h2>
   <figure class="chart-dark">
@@ -1405,7 +1959,7 @@
   </aside>
 </section>
 
-<section class="slide split" data-code="B3" data-page="5" data-time="1:11">
+<section class="slide split" data-code="B3" data-page="5" data-time="1:45">
   <!-- 插圖縮小放右上，右下留給網站版截圖 -->
   <div class="bg-figure" style="inset: 70px 0 auto auto; width: 940px; height: 530px;"><img src="media/ill/I18-brain-to-gears.jpg" alt=""></div>
   <figure class="shot-wrap" style="position: absolute; right: 120px; top: 640px; width: 820px; z-index: 2;">
@@ -1436,7 +1990,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B3" data-page="6" data-time="1:12">
+<section class="slide" data-code="B3" data-page="6" data-time="1:46">
   <p class="kicker">情境與案例 · 案例一 系統化</p>
   <h2 class="title">系統化多出來的東西</h2>
   <div class="media-row" style="margin-top: 26px; gap: 36px; align-items: stretch;">
@@ -1467,7 +2021,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B3" data-page="7" data-time="1:13">
+<section class="slide" data-code="B3" data-page="7" data-time="1:46">
   <p class="kicker">情境與案例 · 案例一 收尾</p>
   <h2 class="title">「只查母法」的防護，搬進網站時掉了</h2>
   <div class="cards c2" style="margin-top: 34px;">
@@ -1496,7 +2050,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B3" data-page="8" data-time="1:14">
+<section class="slide" data-code="B3" data-page="8" data-time="1:47">
   <p class="kicker">情境與案例 · 案例二 標案估價 · 文件審查輔助</p>
   <h2 class="title">從排程抓標案，到通知估價結果</h2>
   <!-- 插圖 I19 只取流程橫帶，邊緣淡出與頁面底色融合 -->
@@ -1524,7 +2078,7 @@
   </aside>
 </section>
 
-<section class="slide split" data-code="B3" data-page="9" data-time="1:16">
+<section class="slide split" data-code="B3" data-page="9" data-time="1:48">
   <!-- 右側放標案估價系統「入庫標單」實際截圖：每筆標單的解析狀態 -->
   <figure class="shot-wrap" style="position: absolute; right: 80px; top: 120px; width: 900px;">
     <div class="shot" style="height: 760px;"><img src="media/shot/aibidding/03-imported-tenders-bid-items.jpg" alt="標案估價系統入庫標單畫面：每筆標單標示 success、needs_review、failed 解析狀態" style="object-position: top center;"></div>
@@ -1550,7 +2104,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B3" data-page="10" data-time="1:18">
+<section class="slide" data-code="B3" data-page="10" data-time="1:49">
   <p class="kicker">情境與案例 · 案例二 踩坑</p>
   <h2 class="title">prompt 變長，耗時翻倍撞上 120 秒</h2>
   <p class="timeline-line">另外兩個坑：向量維度超過索引上限、容器裡跑瀏覽器會留殭屍程序</p>
@@ -1565,10 +2119,10 @@
     <p>這三個坑有一個共同點：都不是模型的問題，是系統的問題。這也是下一段要整理的：AI 進系統以後，上半場的測試、驗證、守門，要換成什麼東西。</p>
   </aside>
 </section>
-<!-- ===== 11-B4.html ===== -->
-<!-- B4 導入常見問題與產品化清單（1:17–1:23，4 頁） -->
+<!-- ===== 13-B4.html ===== -->
+<!-- B4 導入常見問題與產品化清單（1:51–1:55，4 頁） -->
 
-<section class="slide" data-code="B4" data-page="1" data-time="1:20">
+<section class="slide" data-code="B4" data-page="1" data-time="1:51">
   <p class="kicker">導入與產品化 · 產品化清單</p>
   <h2 class="title">上半場的紀律，下半場照樣用</h2>
   <div class="media-row" style="align-items: center; margin-top: 18px;">
@@ -1605,7 +2159,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B4" data-page="2" data-time="1:22">
+<section class="slide" data-code="B4" data-page="2" data-time="1:52">
   <p class="kicker">導入與產品化 · 常見問題（一）</p>
   <h2 class="title">兩個一定會踩的坑：空回應與逾時</h2>
   <div class="cards" style="grid-template-columns: 1fr; gap: 26px; margin-top: 30px;">
@@ -1642,7 +2196,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B4" data-page="3" data-time="1:24">
+<section class="slide" data-code="B4" data-page="3" data-time="1:53">
   <p class="kicker">導入與產品化 · 常見問題（二）</p>
   <h2 class="title">驗證全綠，內容卻漏了；資料也不能亂用</h2>
   <div class="cards" style="grid-template-columns: 1fr; gap: 24px; margin-top: 30px;">
@@ -1690,7 +2244,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="B4" data-page="4" data-time="1:25">
+<section class="slide" data-code="B4" data-page="4" data-time="1:54">
   <p class="kicker">導入與產品化 · 互動 4</p>
   <h2 class="title">先投票，再講我還沒做到的</h2>
   <div class="poll" style="margin-top: 14px; padding: 30px 44px;">
@@ -1719,15 +2273,15 @@
   </div>
   <aside class="notes">
     <p>這一頁先請大家用投票工具選一下：你們的 AI 專案目前最卡在哪？準確度、資料治理與合規、使用者接受度，還是維運成本。</p>
-    <p>（看結果，回應一兩句。這個結果我會帶進最後的諮詢交流，在最相關的那一題回答。）</p>
+    <p>（看結果，回應一兩句。前面交流已回答過的題目，點出是哪一題即可，不重講。）</p>
     <p>講完別人的問題，我也要誠實講我自己還沒做到的三件事。第一，我的法規 RAG 沒有引用正確率的量化評測。第二，客服機器人的規格裡寫了標準答案測試題，但是程式還沒做。第三，地端 LLM 我沒有任何效能數字，所以今天不會跟大家講地端跑得多快。</p>
     <p>這三件事剛好也是下一步要補的，補的方式就是這一段講的：評測集、輸出驗證、監控。</p>
   </aside>
 </section>
-<!-- ===== 12-S8.html ===== -->
-<!-- S8 最近的作品：字導字演與知識島大冒險（1:23–1:27，3 頁） -->
+<!-- ===== 14-S8.html ===== -->
+<!-- S8 最近的作品：字導字演與知識島大冒險（1:55–1:57，3 頁） -->
 
-<section class="slide" data-code="S8" data-page="1" data-time="1:26">
+<section class="slide" data-code="S8" data-page="1" data-time="1:55">
   <p class="kicker">近期作品 · 字導字演</p>
   <h2 class="title">字導字演：刪逐字稿，就等於剪片</h2>
   <div class="media-row" style="margin-top: 22px; align-items: center;">
@@ -1754,7 +2308,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="S8" data-page="2" data-time="1:28">
+<section class="slide" data-code="S8" data-page="2" data-time="1:56">
   <p class="kicker">近期作品 · 知識島大冒險</p>
   <h2 class="title">知識島大冒險：6 天做出 3D 學習島</h2>
   <div class="media-row" style="margin-top: 22px; align-items: center;">
@@ -1785,7 +2339,7 @@
   </aside>
 </section>
 
-<section class="slide split wide-text" data-code="S8" data-page="3" data-time="1:29">
+<section class="slide split wide-text" data-code="S8" data-page="3" data-time="1:56">
   <div class="bg-figure shift-more"><img src="media/ill/I21-ai-assembly-line.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">近期作品 · 為什麼做得出來</p>
@@ -1803,10 +2357,10 @@
     <p>回到今天開場那一頁。三年前 AI 只能寫簡單的函式，一堆 bug；現在，一個人三週可以做出桌面剪輯工具，六天可以做出 3D 學習網站。但這不是因為 AI 突然變得可以信任，是因為我把規格、驗證和審查這條生產線搭起來了。這也是接下來結尾要講的事。同一條生產線，也適用在政府系統：規格、計畫、子代理、測試。</p>
   </aside>
 </section>
-<!-- ===== 13-S9.html ===== -->
-<!-- S9 結尾：主張回扣＋明天就能做的 5 件事（1:27–1:32，3 頁） -->
+<!-- ===== 15-S9.html ===== -->
+<!-- S9 結尾：主張回扣＋明天就能做的 5 件事（1:57–2:00，3 頁） -->
 
-<section class="slide split wide-text" data-code="S9" data-page="1" data-time="1:30">
+<section class="slide split wide-text" data-code="S9" data-page="1" data-time="1:57">
   <div class="bg-figure shift-more"><img src="media/ill/I22-evidence-bridge.jpg" alt=""></div>
   <div class="text-col">
     <p class="kicker">結尾 · 主張，第三次</p>
@@ -1827,7 +2381,7 @@
   </aside>
 </section>
 
-<section class="slide" data-code="S9" data-page="2" data-time="1:32">
+<section class="slide" data-code="S9" data-page="2" data-time="1:58">
   <p class="kicker">結尾 · 帶回去</p>
   <h2 class="title">明天就能做的 5 件事</h2>
   <ul class="points">
@@ -1853,568 +2407,16 @@
   </aside>
 </section>
 
-<section class="slide cover" data-code="S9" data-page="3" data-time="1:34">
+<section class="slide cover" data-code="S9" data-page="3" data-time="1:59">
   <div class="text-col" style="width: 1560px; margin-top: 150px;">
     <p class="kicker">結尾</p>
     <h1 class="title">信任不是一次給的，<br><span class="em">是用證據一步一步換來的</span></h1>
-    <p class="subtitle" style="margin-top: 50px;">謝謝大家。接下來是 25 分鐘的諮詢交流。</p>
+    <p class="subtitle" style="margin-top: 50px;">謝謝大家。</p>
   </div>
   <aside class="notes">
     <p>如果今天只能帶走一句話，就是開場那句：信任不是一次給的，是用證據一步一步換來的。</p>
     <p>工具會一直換，但是規則、驗證、記憶這些方法帶得走；AI 從寫程式的工具變成系統的元件，這套紀律也帶得走。</p>
-    <p>謝謝大家的時間。接下來是 25 分鐘的諮詢交流，題目我準備了四個，也歡迎現場和線上直接提問。</p>
-  </aside>
-</section>
-<!-- ===== 14-QA.html ===== -->
-<!-- 諮詢交流／Q&A（1:35–2:00，24 頁）：會前四題詳解版（Q1 5 頁、Q2 4 頁、召回測試補充 3 頁、Q3 3 頁、Q4 4 頁），再以延伸題當參考，最後謝謝頁 -->
-
-<section class="slide" data-code="QA" data-page="1" data-time="1:35">
-  <p class="kicker">會前問題 · Q1</p>
-  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>問題 1</b>　當知識庫包含大量專案報告書、計畫分析等長篇文件時，應如何進行文件切分、摘要、索引及檢索設計，才能提升資料召回與檢索的精準度？</p></div>
-  <h2 class="title">先分問題類型，各走各的路</h2>
-  <table class="grid">
-    <colgroup><col style="width: 15%"><col style="width: 25%"><col style="width: 28%"><col style="width: 32%"></colgroup>
-    <thead><tr><th>類型</th><th>例子</th><th>走哪條路</th><th>原因</th></tr></thead>
-    <tbody>
-      <tr><td><b>精確查找</b></td><td>計畫編號、條號</td><td>欄位或關鍵字</td><td>向量分不清編號</td></tr>
-      <tr><td><b>單份問答</b></td><td>這份的採樣方法</td><td>限定文件再找段落</td><td>範圍已知</td></tr>
-      <tr><td><b>跨報告彙整</b></td><td>近五年 VOCs 減量做法</td><td>先挑報告，再找段落</td><td>直接找，會被少數長報告佔滿</td></tr>
-      <tr><td><b>統計、比較</b></td><td>各縣市歷年經費</td><td>SQL 查資料表</td><td>RAG 拿不到完整母體</td></tr>
-      <tr><td><b>全庫主題</b></td><td>談了哪些議題</td><td>事先產生主題摘要</td><td>這是摘要問題</td></tr>
-    </tbody>
-  </table>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-6 檢索：先撈，再排　·　B2-7 判斷：小模型先分流</p>
-  <aside class="notes">
-    <p>接下來是 Q&amp;A。先回答貴公司會前提供的四個問題，之後開放現場與視訊的朋友提問。畫面上的表格我會盡量完整，台中的朋友不用靠我口述也看得到解法。</p>
-    <p>第一題。一萬五千份報告的規模，最常見的失敗不是向量模型不夠好，而是同一套索引要回答四、五種不同的問題。所以第一步先把問題分類。</p>
-    <p>查計畫編號、測站代碼、條號這種精確查找，走結構化欄位或關鍵字，因為向量檢索不擅長編號，會找到意思相近但不是那一筆。問某一份報告裡的內容，先用文件 ID 限定範圍再找段落。跨報告彙整，要先用文件層的 metadata 和摘要挑出相關報告，再到這幾份裡找段落，否則前幾名容易被少數幾份長報告佔滿。</p>
-    <p>近十年各縣市某類計畫經費這種統計題，根本不是 RAG：RAG 拿到的是幾段文字，不是完整母體，算出來的數字不可信，要把欄位事先抽出來放資料庫用 SQL 算。至於「這些報告主要談了哪些議題」，是摘要問題，用事先產生的主題摘要。路由本身可以用規則加小型判斷模型做，不必每題都叫大模型，這部分第四題會再講。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="2" data-time="1:36">
-  <p class="kicker">會前問題 · Q1</p>
-  <h2 class="title">三層索引：先挑報告，再找段落</h2>
-  <table class="grid">
-    <colgroup><col style="width: 14%"><col style="width: 46%"><col style="width: 40%"></colgroup>
-    <thead><tr><th>層</th><th>存什麼</th><th>用在哪</th></tr></thead>
-    <tbody>
-      <tr><td><b>文件層</b></td><td>metadata、全文摘要（約 300～500 字）、目錄</td><td>從一萬五千份挑出 10～30 份</td></tr>
-      <tr><td><b>章節層</b></td><td>每一章的摘要，掛章節路徑</td><td>長報告先定位到章</td></tr>
-      <tr><td><b>段落層</b></td><td>父子分塊：小塊比對，命中後回傳所屬大塊</td><td>在挑出的報告裡找證據</td></tr>
-    </tbody>
-  </table>
-  <ul class="points compact" style="margin-top: 30px;">
-    <li>依報告自己的章節結構切，不用固定字數；一節太長才在段落邊界再切</li>
-    <li>每塊前面加「報告名＞第三章＞3.2 節」路徑，也可請 LLM 補 50～100 token 的位置說明</li>
-  </ul>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-5 圖片、PDF、聲音，先變成文字　·　B2-6 檢索：先撈，再排</p>
-  <aside class="notes">
-    <p>索引做成三層。文件層放 metadata、全文摘要和目錄，第一階段用它從一萬五千份裡挑出十到三十份。章節層放每一章的摘要，在長報告裡先定位到章。段落層用父子分塊：小塊讓向量比對精準，命中後回傳所屬的大塊，讓模型有足夠的上下文。</p>
-    <p>切分依報告自己的章節結構，不用固定字數：先把 PDF 解析成有標題層級的 Markdown，再依章節切，一節太長才在段落邊界再切。每一塊前面加上「報告名、第幾章、第幾節」的路徑。</p>
-    <p>還可以用 LLM 替每一塊寫五十到一百 token 的位置說明，說這塊在整份報告的什麼位置、談什麼，接在塊前面再建向量和關鍵字索引，這叫 Contextual Retrieval，代價是每塊多一次 LLM 呼叫。我自己的專案設定是父塊兩千字、子塊四百字、重疊五十字，那只是我的實測設定，不是最佳值，要用自己的測試集調。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="3" data-time="1:37">
-  <p class="kicker">會前問題 · Q1</p>
-  <h2 class="title">召回先放大，再逐段篩選</h2>
-  <table class="grid">
-    <colgroup><col style="width: 15%"><col style="width: 42%"><col style="width: 15%"><col style="width: 28%"></colgroup>
-    <thead><tr><th>階段</th><th>做法</th><th>留下</th><th>部署</th></tr></thead>
-    <tbody>
-      <tr><td><b>1 放大召回</b></td><td>向量＋關鍵字雙軌，metadata 先過濾</td><td>100～200 筆</td><td>地端</td></tr>
-      <tr><td><b>2 精排</b></td><td>rerank 逐筆打相關分數</td><td>20～30 筆</td><td>地端</td></tr>
-      <tr><td><b>3 篩選</b></td><td>Jev（雲端的小型是非題判斷服務）逐段問「有沒有回答所需資訊」</td><td>5～10 筆</td><td>雲端，只送公開或去識別化資料</td></tr>
-      <tr><td><b>4 生成</b></td><td>LLM 只依留下的段落回答，附報告名與頁碼</td><td>—</td><td>依資料分級</td></tr>
-    </tbody>
-  </table>
-  <ul class="points compact" style="margin-top: 26px;">
-    <li>政府單位多用地端 embedding，效果常比雲端差：用筆數換召回，再逐段提高精準度</li>
-    <li>雙軌一定要有；中文斷詞用 ICU 或 CKIP 或 2-gram，再加領域詞典</li>
-  </ul>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-6 檢索：先撈，再排　·　B2-7 判斷：小模型先分流，需要時才叫 LLM</p>
-  <aside class="notes">
-    <p>政府單位的 embedding 原則上用地端模型，資料不出機關，效果常比雲端差，所以檢索分三段，先用數量換召回，再逐段提高精準度。</p>
-    <p>第一段放大召回：地端 embedding 加關鍵字雙軌並行，先用 metadata 過濾，再融合，多抓一百到兩百筆。第二段用地端 rerank 排到二十到三十筆。第三段用 Jev 逐段問一題是非題：這段是否包含回答問題所需的資訊，留下五到十筆。第四段才是 LLM 生成，只依留下的段落回答，附報告名與頁碼。這些筆數是起始值，要依測試調整。</p>
-    <p>Jev 是雲端服務。如果 embedding 要地端的理由是資料不能出機關，那把段落送到 Jev 也一樣是出機關；所以只送公開的成果報告，而且要經機關確認；非公開或含個資的資料，這一段改用地端模型回答是非題，或直接用 rerank 分數門檻。中文效果要自己測，所以正解被篩掉的誤殺率一定要量。</p>
-    <p>雙軌一定要有。我在法規查詢實測過，同一句白話問題，語意軌找到三筆相關判決、關鍵字軌零筆；改成精煉關鍵字後五筆，兩軌結果零重疊。地端 embedding 比較弱時，關鍵字軌更重要。另外中文斷詞是最常被忽略的地方，預設斷詞器會把細懸浮微粒、揮發性有機物切錯，建議用 ICU 或中研院 CKIP，或直接 2-gram，再加污染物、測站、法規名的領域詞典。</p>
-    <p>最後提醒：向量資料庫加過濾條件時，篩選很嚴會讓回傳筆數少於 k 甚至零筆，上線前要用條件很嚴的查詢測一次。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="4" data-time="1:38">
-  <p class="kicker">會前問題 · Q1</p>
-  <h2 class="title">metadata 先拿系統欄位，再逐步補</h2>
-  <div class="cards c2" style="margin-top: 10px;">
-    <div class="card accent"><p class="label">加哪些欄位</p>
-      <p>識別：計畫名稱與編號、年度、主辦與執行單位</p>
-      <p>內容：報告類型、版本、介質、污染物、地區、資料期間、引用法規</p>
-      <p>位置：章節路徑、頁碼、內容型態</p>
-      <p>管控：公開等級，檢索前先過濾</p>
-    </div>
-    <div class="card"><p class="label">取得順序（成本由低到高）</p>
-      <p>1　來源系統已有的欄位</p>
-      <p>2　規則與詞典：編號、年度、縣市、污染物、條號</p>
-      <p>3　抽不到才用小型判斷模型分類，記信心值</p>
-      <p>4　版本、公開等級抽樣人工核對</p>
-    </div>
-  </div>
-  <p class="timeline-line" style="margin-top: 26px;"><b>查詢時</b><span class="sep">→</span>抽出問題裡的條件<span class="sep">→</span>帶條件檢索<span class="sep">→</span>0 筆就逐步放寬並說明<span class="sep">→</span>條件顯示給使用者可改</p>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-6 檢索：先撈，再排　·　B2-8 模型是設定，不是程式碼</p>
-  <aside class="notes">
-    <p>metadata 是這次最值得投資的地方。欄位分四組：識別，像計畫名稱、編號、年度、主辦單位、執行單位；內容，像報告類型、版本是否定稿、環境介質、污染物、地理範圍、資料期間、引用的法規；位置，像章節路徑、頁碼、內容型態是正文、表格、圖說還是附錄；管控，就是公開等級，這個要在檢索之前先過濾。</p>
-    <p>取得欄位的順序是成本由低到高。第一，先拿來源系統已有的欄位，像環保專案成果倉儲系統的開放資料就有標題、摘要、年度、主辦、執行單位。第二，用規則和詞典抽：計畫編號、年度、縣市、污染物、法條字號，可重現、零成本、錯了查得到原因。第三，規則抽不到的才交給小型判斷模型做固定選項的分類，像環境介質、主題，並記下信心值。第四，版本、公開等級這類高價值欄位抽樣人工核對。所有正規化，像機關改制、同義詞、單位，用對照表做，不靠模型記。</p>
-    <p>查詢端怎麼用：先從使用者問題抽出篩選條件，像「台中」「去年」「空品」變成縣市、資料期間、介質；先帶條件檢索，0 筆或太少就逐步放寬，先拿掉地區、再拿掉年度，並且在回答裡說明放寬了什麼；抽出的條件要顯示給使用者看，可以手動修改，這比讓模型猜更不容易錯。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="5" data-time="1:39">
-  <p class="kicker">會前問題 · Q1</p>
-  <h2 class="title">表格與圖表抽成資料，數字不靠向量</h2>
-  <ul class="points compact">
-    <li>表格、圖表、統計數據抽出來存進資料庫，記來源報告與頁碼，抽樣核對</li>
-    <li>向量庫只留「表格說明＋表頭」一塊，內容型態標「表格」，並記對應的資料表</li>
-    <li>檢索命中這類塊時，改走 SQL 查資料表，不拿向量裡的文字回答數字</li>
-    <li>圖表優先找原始數據；找不到才用多模態模型產生文字描述，標「AI 描述」，數字人工核對</li>
-    <li>跨頁的大表，補上重複的表頭</li>
-  </ul>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-5 圖片、PDF、聲音，先變成文字　·　B2-6 檢索：先撈，再排</p>
-  <aside class="notes">
-    <p>這一頁是長篇報告特別要注意的：報告裡很多重要資訊在表格、圖表和統計數據裡，這些東西如果直接切成文字塊丟進向量庫，數字會被切碎、表頭會掉，回答出來的數字不可信。</p>
-    <p>做法是把表格、圖表和統計數據抽出來存進資料庫，每一筆記錄來源報告和頁碼，並且抽樣人工核對。向量庫裡只留一塊「表格說明加表頭」，內容型態標成表格，並且記下它對應的資料表。檢索命中這種塊的時候，不是拿向量裡的文字回答，而是改走 SQL 去查資料表，所以數字題一律由資料表給答案。</p>
-    <p>圖表優先去找原始數據，環保專案成果倉儲系統本來就要求上傳原始數據；找不到原始數據，才用多模態模型替圖表產生文字描述，這種描述要標成「AI 描述」，裡面的數字要人工核對。跨頁的大表，解析時補上重複的表頭，免得後面幾頁的欄位沒有名字。</p>
-    <p>至於怎麼確認這些調整真的讓命中率變好，後面「補充」那三頁會講召回測試流程。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="6" data-time="1:40">
-  <p class="kicker">會前問題 · Q2</p>
-  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>問題 2</b>　建置向量資料庫時，標題、章節名稱、摘要、正文等資料應如何取捨，哪些內容需要向量化？遇到數十萬字的成果報告，又應如何處理？</p></div>
-  <h2 class="title">基本 RAG 之外，每階段加一層</h2>
-  <table class="grid">
-    <colgroup><col style="width: 14%"><col style="width: 33%"><col style="width: 53%"></colgroup>
-    <thead><tr><th>階段</th><th>做什麼</th><th>這兩題的做法</th></tr></thead>
-    <tbody>
-      <tr><td><b>索引前</b></td><td>解析、切分、補上下文</td><td>依章節切、塊前加路徑、摘要、表格抽出</td></tr>
-      <tr><td><b>查詢前</b></td><td>改寫、拆解、路由、抽條件</td><td>口語改公文用語；比較題拆子問題；條號、數字題不先讓 AI 寫假想答案再去找（HyDE）</td></tr>
-      <tr><td><b>檢索</b></td><td>多路召回、融合</td><td>向量＋關鍵字＋metadata 過濾</td></tr>
-      <tr><td><b>檢索後</b></td><td>重排、去重、把關</td><td>rerank；同計畫多版本去重；逐段判斷是否回答問題</td></tr>
-      <tr><td><b>生成</b></td><td>依證據回答</td><td>只引用檢索結果；查無依據照範本拒答</td></tr>
-    </tbody>
-  </table>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-6 檢索：先撈，再排　·　B2-7 判斷：小模型先分流，需要時才叫 LLM</p>
-  <aside class="notes">
-    <p>第二題用進階 RAG 的框架來看。基本 RAG 是切塊、向量化、找相似、塞給模型一條線；進階 RAG 在索引前、查詢前、檢索後各加一層處理。</p>
-    <p>索引前做解析、清理、切分、補上下文、metadata 和表格抽出。查詢前做改寫、拆解、路由、抽條件：口語和公文用語不同，像「臭味」和「異味污染物」，改寫可以對齊，但原問題也要一起檢索；比較題像「比較一百一十二和一百一十三年的做法」拆成子問題；HyDE 是先讓 LLM 寫一段假想答案去找相似段落，假想答案裡的錯誤名詞或年份會把檢索帶偏，所以條號和數字題不要用。</p>
-    <p>檢索階段向量加關鍵字加 metadata 過濾，再融合。檢索後做 rerank、同計畫期中期末多版本去重，預設留定稿，以及逐段判斷這段有沒有回答問題，全部不相關就改查或拒答；這一步很適合小型判斷模型，也接到第三題的語意閘門。最後生成只能引用檢索結果，附報告名和頁碼，查無依據就照範本拒答。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="7" data-time="1:41">
-  <p class="kicker">會前問題 · Q2</p>
-  <h2 class="title">標題接在正文前，摘要用來找報告</h2>
-  <table class="grid">
-    <colgroup><col style="width: 22%"><col style="width: 14%"><col style="width: 13%"><col style="width: 20%"><col style="width: 31%"></colgroup>
-    <thead><tr><th>內容</th><th>向量化</th><th>關鍵字</th><th>metadata</th><th>處理方式</th></tr></thead>
-    <tbody>
-      <tr><td><b>標題、章節名稱</b></td><td>不單獨做</td><td>✔</td><td>✔ 章節路徑</td><td>接在每塊前一起向量化</td></tr>
-      <tr><td><b>摘要</b></td><td>✔</td><td>✔</td><td>—</td><td>用來挑報告；回答回正文找證據</td></tr>
-      <tr><td><b>正文、結論與建議章</b></td><td>✔ 小塊</td><td>✔</td><td>章節類型</td><td>命中小塊，回傳大塊</td></tr>
-      <tr><td><b>表格</b></td><td>✔ 說明＋表頭</td><td>✔</td><td>內容型態＝表格</td><td>本體進資料表，數字題用 SQL</td></tr>
-      <tr><td><b>圖說</b></td><td>✔</td><td>✔</td><td>內容型態＝圖</td><td>重要圖表標「AI 描述」</td></tr>
-      <tr><td><b>附錄原始數據、目錄、參考文獻、頁首頁尾、浮水印</b></td><td>✘</td><td>✘</td><td>頁碼留著</td><td>附錄進資料表；目錄用來建章節樹</td></tr>
-    </tbody>
-  </table>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-5 圖片、PDF、聲音，先變成文字　·　B2-6 檢索：先撈，再排</p>
-  <aside class="notes">
-    <p>先講取捨。標題和章節名稱不要單獨做成向量，它們太短、語意太少；正確用法是接在每一塊正文前面一起向量化，同時當 metadata 和關鍵字欄位，章節名稱也是章節摘要的標題。</p>
-    <p>摘要要向量化，不管是作者寫的中英文摘要，還是我們產生的章節摘要、全文摘要，但它是拿來找報告、找章節，不是拿來回答細節，回答時要回到正文找證據，不直接引用摘要。正文切小塊做向量，命中小塊回傳大塊。結論與建議章在跨報告彙整時常常只需要這一章，可以加權或獨立索引。</p>
-    <p>表格向量化的只是表格說明加表頭，本體轉成結構化資料，數值題查資料表。圖說向量化，重要圖表可用多模態模型產生文字描述，標成 AI 描述。附錄原始數據進資料表，也正是環保專案成果倉儲系統缺漏的部分。目錄只用來建章節樹；參考文獻除非要做誰引用了某研究才另建索引；頁首頁尾、頁碼、浮水印、封面，解析時清掉，頁碼留作 metadata。</p>
-    <p>另外一個做法是多重表示：一個父塊可以有好幾個向量指向它，包括子塊、摘要，還有由 LLM 產生的「這段能回答哪些問題」。民眾或承辦人的問法和報告用語差很多時，這很有用。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="8" data-time="1:42">
-  <p class="kicker">會前問題 · Q2</p>
-  <h2 class="title">整份讀完，放在建索引時做一次</h2>
-  <table class="grid">
-    <colgroup><col style="width: 18%"><col style="width: 82%"></colgroup>
-    <thead><tr><th>步驟</th><th>做什麼</th></tr></thead>
-    <tbody>
-      <tr><td><b>1 版面解析</b></td><td>辨識標題層級與表格，轉成 Markdown；掃描頁走 OCR</td></tr>
-      <tr><td><b>2 建章節樹</b></td><td>章＞節＞小節，每個節點記頁碼範圍</td></tr>
-      <tr><td><b>3 整份精讀</b></td><td>依章節精讀一次，產出摘要卡（目的、地區、期間、方法、發現、數據、建議、限制、法規）</td></tr>
-      <tr><td><b>4 依結構切塊</b></td><td>節內切父塊與子塊，塊前加章節路徑與位置說明</td></tr>
-      <tr><td><b>5 章摘要</b></td><td>由整章原文產生，不是片段摘要的合併</td></tr>
-      <tr><td><b>6 表格與附錄</b></td><td>進資料表，記來源報告與頁碼</td></tr>
-      <tr><td><b>7 查詢時</b></td><td>摘要卡定位報告與章，章內檢索，必要時整章交給模型精讀</td></tr>
-    </tbody>
-  </table>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-5 圖片、PDF、聲音，先變成文字　·　B2-6 檢索：先撈，再排</p>
-  <aside class="notes">
-    <p>十幾萬字的報告，我同意只靠「切塊之後再摘要、再往上合併」效果有限：每一塊在切開的當下就失去前後文，往上合併的摘要只是片段的摘要的摘要，前面章節定義的名詞、後面章節的結論都接不起來。</p>
-    <p>解法是把整份讀完這件事放在建索引時做一次，結果存下來給每次查詢用；查詢時只對已經定位到的章節精讀。流程七步。第一，版面解析：用能辨識標題層級、閱讀順序、表格結構的解析器轉成 Markdown，例如 IBM 開源、可以地端跑的 Docling，跨頁表格可以重複表頭；掃描頁另外走 OCR，抽樣人工核對。第二，依標題層級或目錄頁建章節樹，每個節點記頁碼範圍。</p>
-    <p>第三，整份精讀：依章節 map-reduce，產生報告摘要卡，固定欄位包括目的、地區、期間、方法、主要發現、關鍵數據、建議、限制、引用法規，這也是 metadata 的來源。第四，依結構切父塊子塊，塊前加章節路徑和位置說明。第五，章摘要由整章原文產生，可以參考 RAPTOR 的樹狀摘要概念，但分組依報告自己的目錄樹，不用自動分群，比較好重現與除錯。第六，表格與附錄進資料表。第七，查詢時由粗到細：摘要卡和欄位定位到報告與章，章內走剛才的三段式漏斗，必要時整章交給模型精讀。</p>
-    <p>十幾萬字大約是十幾萬到二十幾萬 token，依 tokenizer 差很多，用實際檔案量一次，再決定能不能整份放進上下文；地端模型的上下文多在一百二十八 k 等級，放不下就改成整章。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="9" data-time="1:43">
-  <p class="kicker">會前問題 · Q2</p>
-  <h2 class="title">全庫問題與工具，各有取捨</h2>
-  <div class="cards c2" style="margin-top: 10px;">
-    <div class="card accent"><p class="label">跨一萬五千份的全庫問題</p>
-      <p>基本 RAG 只找最像的幾段，答不了「談了哪些議題」</p>
-      <p>先用領域欄位建輕量知識圖：計畫—地區—污染物—方法—結論—法規</p>
-      <p>跨報告主題才試完整 GraphRAG；單份細節題不一定比較好，建置成本也高</p>
-    </div>
-    <div class="card"><p class="label">政府場域的工具提醒</p>
-      <p>陸製風險：BGE 嵌入與重排、Qwen、MinerU、jieba、Milvus</p>
-      <p>替代：TAIDE 嵌入模型、Docling、ICU 或 CKIP 斷詞、pgvector 或 Qdrant</p>
-      <p>Milvus 的來源要書面確認</p>
-    </div>
-  </div>
-  <div class="callout" style="margin-top: 26px;"><p><b>建議順序</b>：摘要卡與欄位 → 領域知識圖 → 測試集仍不及格，才試完整 GraphRAG</p></div>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-3、B2-4 政府限制　·　B2-5 先變成文字　·　B2-6 先撈再排</p>
-  <aside class="notes">
-    <p>全庫問題，像「這些報告主要談了哪些議題」「某主題十年來的研究脈絡」，基本 RAG 做不好，因為它只會找最像的幾段。我的建議順序是：先做摘要卡和結構化欄位，用這些欄位建領域 schema 的輕量知識圖，也就是計畫、地區、污染物、方法、結論、法規之間的關係；召回測試裡跨報告和全庫主題那類題目仍然不及格，才用 LazyGraphRAG 做概念驗證，最後才考慮完整 GraphRAG。每一步都用同一份測試集比較。</p>
-    <p>GraphRAG 是不是比較好要分題型看：跨很多份報告的主題與關聯題，答案的完整度與多樣性明顯比較好，但那是英文資料集、廠商自測、LLM 評審的完整度，不是事實正確率；單份報告的細節題、精確查找，不一定比較好。代價是建索引要 LLM 讀完全部文字，圖的品質取決於實體抽取，同一測站、同一污染物有多種寫法，合併不好圖就斷掉，資料一更新分群與摘要要重算。較便宜的替代做法是依介質、年度、主辦署分組，用摘要卡事先產生分組摘要並定期更新。</p>
-    <p>工具選擇有一個政府場域的提醒：聽眾做政府標案，納入特別聲明的契約履約不得使用陸製資通訊產品。RAG 工具鏈裡常見但來源屬中國的元件要先檢查：BGE 嵌入和重排是北京智源，Qwen 是阿里巴巴，MinerU 是上海人工智慧實驗室，jieba 和 IK 斷詞是中國開發者，Milvus 創立於上海，來源要書面確認。替代方案是 TAIDE 嵌入模型、雲端的非陸製服務、IBM 的 Docling、ICU 或中研院 CKIP 斷詞，向量資料庫可以用 pgvector、Elasticsearch、Qdrant。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="10" data-time="1:44">
-  <p class="kicker">會前問題 · Q1、Q2 補充</p>
-  <h2 class="title">測試集用真實提問，正解標頁碼</h2>
-  <table class="grid">
-    <colgroup><col style="width: 17%"><col style="width: 83%"></colgroup>
-    <thead><tr><th>項目</th><th>做法</th></tr></thead>
-    <tbody>
-      <tr><td><b>題目來源</b></td><td>承辦人真實提問、系統 log 優先；從報告反向出題的問法太像原文，召回率會被高估</td></tr>
-      <tr><td><b>規模</b></td><td>50～100 題起步，之後從線上 log 持續補</td></tr>
-      <tr><td><b>題型</b></td><td>精確查找、單份問答、跨報告、統計、應拒答（庫裡本來沒有答案）</td></tr>
-      <tr><td><b>正解標註</b></td><td>標「報告 ID＋頁碼」，不標塊編號；改切塊後編號會全變</td></tr>
-      <tr><td><b>附帶</b></td><td>附上預期的 metadata 條件；測試集放版控，改題留紀錄</td></tr>
-    </tbody>
-  </table>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-8 模型是設定，不是程式碼　·　B3-7 「只查母法」的防護，搬進網站時掉了</p>
-  <aside class="notes">
-    <p>RAG 調參數的地方很多：切塊大小、重疊、metadata、embedding 模型、召回筆數、rerank、篩選門檻，每一個都會互相影響。沒有自己的測試集和測試流程，所有調整都是憑感覺。所以每改一個，都要重跑同一份測試題，拿到召回率的實際數字再決定。</p>
-    <p>測試集怎麼建。題目來源第一優先是承辦人的真實提問和系統 log；第二才是從報告段落反向出題，由 LLM 產生、人工審過，但反向出題的問法會太像原文，召回率會被高估。我自己的意圖分類評測就遇過：用和選項描述同源的語句測，第一名正確率一百趴，只能當上限，後來另外補真實語句。</p>
-    <p>規模從五十到一百題起步，少於五十題，一兩題的差異就會讓結論翻轉。題型要分層：精確查找、單份內問答、跨報告、統計，還要有應拒答的題目，也就是庫裡本來沒有答案的，用來量不該找到卻硬找。正解要標報告 ID 加頁碼，不要標塊編號，因為一改切塊，編號就全變了；判定命中是檢索到的塊和正解頁碼區間有重疊。題目附上預期的 metadata 條件，可以單獨測條件抽取那一步。測試集放進版控，改題要留紀錄，因為一改，前後的數字就不能比。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="11" data-time="1:45">
-  <p class="kicker">會前問題 · Q1、Q2 補充</p>
-  <h2 class="title">指標分段量，才知道答案在哪弄丟</h2>
-  <table class="grid">
-    <colgroup><col style="width: 22%"><col style="width: 13%"><col style="width: 38%"><col style="width: 27%"></colgroup>
-    <thead><tr><th>指標</th><th>類型</th><th>量什麼</th><th>決定什麼</th></tr></thead>
-    <tbody>
-      <tr><td><b>文件層 Recall@10</b></td><td><span class="tag teal">標準</span></td><td>前 10 份有沒有正解報告</td><td>摘要卡、metadata 有沒有用</td></tr>
-      <tr><td><b>段落層 Recall@k</b></td><td><span class="tag teal">標準</span></td><td>k＝20～200 有沒有正解段落</td><td>第一段抓幾筆</td></tr>
-      <tr><td><b>MRR</b></td><td><span class="tag teal">標準</span></td><td>第一個正解排第幾</td><td>排序品質</td></tr>
-      <tr><td><b>漏斗各段命中率</b></td><td><span class="tag">排查用</span></td><td>召回、rerank、篩選、送模型各段，正解還在不在</td><td>哪一段把答案弄丟</td></tr>
-      <tr><td><b>篩選誤殺率</b></td><td><span class="tag">排查用</span></td><td>正解被 rerank 或 Jev 篩掉的比例</td><td>rerank 筆數、Jev 門檻</td></tr>
-      <tr><td><b>應拒答正確率</b></td><td><span class="tag">名稱不一</span></td><td>沒答案的題有沒有回「查無」</td><td>門檻是否太低</td></tr>
-    </tbody>
-  </table>
-  <p class="dim" style="font-size: 26px; margin-top: 14px;">備註　其他常見標準指標：檢索 Hit Rate@k、Precision@k、nDCG；生成 faithfulness（是否忠於檢索內容）、answer relevancy（RAGAS）</p>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-8 模型是設定，不是程式碼　·　B2-6 檢索：先撈，再排</p>
-  <aside class="notes">
-    <p>指標要分段量，不是只看最後答對沒有。文件層看前十份有沒有正解報告，用來判斷摘要卡和 metadata 有沒有用。段落層看前 k 段有沒有正解，k 取二十、五十、一百、二百，畫出曲線，第一段要抓多少筆就取曲線開始變平的位置。</p>
-    <p>最重要的是漏斗各段命中率：正解在召回、rerank、篩選、送進模型這四段，每一段還在不在，這樣才知道是哪一段把答案弄丟的。再加上篩選誤殺率，也就是正解被 rerank 或 Jev 篩掉的比例，用來決定 rerank 留幾筆、Jev 門檻設多少。MRR 看正解排第幾名；應拒答正確率看沒答案的題目有沒有回查無，門檻設太低就會硬湊答案。延遲和每題成本是上線可行性要看的，這裡不展開。</p>
-    <p>這些檢索指標不需要 LLM，便宜，可以每次改都跑。</p>
-    <p>補充一下：Recall@k 和 MRR 是資訊檢索的標準指標；漏斗各段命中率和篩選誤殺率是我為了排查自訂的說法，本質是在每一段各量一次 Recall；應拒答在學界常叫 negative rejection 或 abstention，名稱不統一。其他常見的標準指標還有 Hit Rate、Precision@k、nDCG，生成端可以看 RAGAS 的 faithfulness 和 answer relevancy。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="12" data-time="1:46">
-  <p class="kicker">會前問題 · Q1、Q2 補充</p>
-  <h2 class="title">一次只改一個變因，檢索與生成分開測</h2>
-  <div class="cards c2" style="margin-top: 10px;">
-    <div class="card accent"><p class="label">每次調整的流程</p>
-      <p>1　先跑一次，存成基線</p>
-      <p>2　一次只改一個變因</p>
-      <p>3　同一支腳本跑全部題目，與基線並排比較</p>
-      <p>4　失敗題逐題歸類：沒進索引、切壞、條件濾掉、沒召回、被排掉、被篩掉、模型沒用到</p>
-      <p>5　低於基線的修改在 CI 擋下</p>
-    </div>
-    <div class="card"><p class="label">檢索與生成分開測</p>
-      <p>檢索：上面的指標，不用 LLM，每次改都跑</p>
-      <p>生成：回答有沒有被引用的段落支持、頁碼對不對</p>
-      <p>先用程式比對引文是否存在，再讓小型判斷模型判斷「支持、矛盾、沒提到」，低信心抽樣人工看</p>
-      <p>換 embedding 模型等於整個向量庫重建，先在測試環境跑完再上線</p>
-    </div>
-  </div>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-8 模型是設定，不是程式碼　·　B3-7 「只查母法」的防護，搬進網站時掉了</p>
-  <aside class="notes">
-    <p>每次調整的流程。第一，先跑一次目前設定，存成基線。第二，一次只改一個變因：切塊大小、重疊、metadata 欄位、斷詞、embedding 模型、k、rerank 筆數、Jev 門檻。第三，用同一支腳本跑全部題目，輸出每題結果和摘要報表，與基線並排比較。第四，失敗題逐題歸類：沒進索引，像解析失敗或掃描檔沒 OCR；切壞了，答案被切到兩塊；metadata 條件把正解濾掉；向量和關鍵字都沒召回；rerank 排掉；Jev 篩掉；有送進模型但模型沒用到。第五，結果存檔，確定採用的設定把數字寫進變更紀錄。第六，放進 CI，召回率低於基線就擋下，避免之後的修改悄悄變差。第七，換 embedding 模型等於整個向量庫重建，一定要先在測試環境重建、跑完測試再上線。</p>
-    <p>檢索和生成要分開測。檢索用上面的指標，不需要 LLM，便宜。生成另外測回答有沒有被引用的段落支持、引用的頁碼對不對，可以先用程式比對引文是否存在，再用小型判斷模型判斷支持、矛盾或沒提到，低信心的抽樣人工看。</p>
-    <p>要老實說：我自己的法規網站目前只量了案子跑完的完成度，還沒有量檢索正確率；召回測試流程是我也還在補的部分。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="13" data-time="1:47">
-  <p class="kicker">會前問題 · Q3</p>
-  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>問題 3</b>　即使 Prompt 已要求固定格式、指定欄位及使用繁體中文，LLM 輸出仍可能出現格式、欄位變動或偶爾出現簡體字，應如何提升輸出的穩定性與一致性？</p></div>
-  <h2 class="title">要有閘門，但格式不交給模型</h2>
-  <table class="grid">
-    <colgroup><col style="width: 44%"><col style="width: 20%"><col style="width: 36%"></colgroup>
-    <thead><tr><th>要檢查的東西</th><th>誰檢查</th><th>理由</th></tr></thead>
-    <tbody>
-      <tr><td><b>JSON 結構、欄位、型別、簡體字、大陸用語</b></td><td>程式</td><td>有標準答案，查表比模型準，零成本</td></tr>
-      <tr><td><b>有沒有依據、答非所問、杜撰法源或數字</b></td><td>小型判斷模型（Jev）</td><td>語意判斷，程式做不到</td></tr>
-      <tr><td><b>高風險、低信心</b></td><td>人</td><td>承辦人做最終判斷</td></tr>
-    </tbody>
-  </table>
-  <div class="callout" style="margin-top: 22px;"><p><b>Jev</b>：雲端的小型是非題判斷服務；中文要自測，<b>拆成逐項是非題</b></p></div>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B1-2 哪些事一定要寫進程式碼　·　B3-5 必做步驟寫成程式碼</p>
-  <aside class="notes">
-    <p>先回答要不要用一個模型當閘門：要有閘門，這個方向是對的；但格式和簡體字不該由模型來把關。JSON 結構、欄位、型別，用程式檢查是百分之百、零成本、可重現的；簡體字是字元層級的比對，字典查表就能判斷；用模型檢查反而多一個會出錯的環節。</p>
-    <p>模型閘門留給程式做不到的語意判斷：內容有沒有依據、是不是答非所問、有沒有杜撰法源或數字。這一層用 Jev 這類小型判斷模型很合適，Jev 是雲端的小型是非題判斷服務，一次請求可以平行問多題、回傳機率、依門檻決定放行、轉人工或擋下。高風險、低信心的，交給人，承辦人做最終判斷。</p>
-    <p>Jev 官方文件寫明英文最好、中日韓文要用自己的資料測，也不擅長數字元，字元層級的簡體字偵測正好落在弱項。我的中文實測是字幕斷句：讓它從兩行全文選一個切點，四個例子零命中；改成每個候選切點各問一題「這個切點是否把詞拆開」，使用者保留的界線七十五個裡判斷對了六十七個。教訓是中文要拆成逐項的是非題，不要讓它從整段文字裡挑。</p>
-    <p>資料治理：Jev 是雲端服務，只送公開或去識別化的內容；非公開資料這一層改用地端模型問是非題，或用地端的分類、rerank 模型。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="14" data-time="1:48">
-  <p class="kicker">會前問題 · Q3</p>
-  <h2 class="title">五層做法，一層一個職責</h2>
-  <table class="grid">
-    <colgroup><col style="width: 17%"><col style="width: 53%"><col style="width: 30%"></colgroup>
-    <thead><tr><th>層</th><th>做法</th><th>擋什麼</th></tr></thead>
-    <tbody>
-      <tr><td><b>L0 固定範本</b></td><td>範本由程式持有，AI 只回傳每個佔位符的內容；表格數字由資料庫填</td><td>格式、版面、欄位順序</td></tr>
-      <tr><td><b>L1 生成約束</b></td><td>結構化輸出 schema（欄位、選項、必填）；溫度調低；提示詞用臺灣繁體</td><td>欄位跑掉、選項亂寫</td></tr>
-      <tr><td><b>L2 確定性檢查</b></td><td>schema 驗證、欄位規則、簡體字偵測、用語黑名單；空回應算失敗</td><td>漏網的格式與簡體字</td></tr>
-      <tr><td><b>L3 語意閘門</b></td><td>每欄位問是非題：有依據嗎？答對欄位嗎？有檢索以外的法規或數字嗎？</td><td>格式對但內容錯</td></tr>
-      <tr><td><b>L4 人工覆核</b></td><td>低信心、高風險一律人審，畫面標「AI 產出」</td><td>最後一道</td></tr>
-    </tbody>
-  </table>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B1-2 哪些事一定要寫進程式碼　·　B3-5 必做步驟寫成程式碼</p>
-  <aside class="notes">
-    <p>我分五層。L0 最有效：不要讓 AI 產生格式。範本是固定檔案，Word、HTML 或 Markdown，由程式持有；AI 只回傳每個佔位符要填的內容，程式負責填入、組裝、排版；表格裡的數字由資料庫填，不讓 AI 產生。這樣格式、版面、欄位順序完全由程式決定，AI 無法改動。我的簡報產生和採購案例都是這個做法。</p>
-    <p>L1 生成時用結構化輸出，把欄位、選項、必填寫在 schema 裡，而不是寫在提示詞裡；選項類欄位用列舉，溫度調低，提示詞和範例都用臺灣繁體。L2 是確定性檢查：schema 驗證、欄位規則、簡體字偵測、用語黑名單，空值和空回應一律視為失敗，不過就把錯誤訊息帶回去重試，最多兩次。這是因為我遇過同時送十六批約一成二回壞 JSON，也遇過推理吃掉輸出額度、可見回應是空的。</p>
-    <p>L3 才是模型閘門：每個欄位或每條主張各問一題是非題，內容是否有檢索結果支持、是否回答了這個欄位要的東西、是否出現檢索結果以外的法規或數字，再加一題嚴重度，依門檻放行、重試或轉人工。L4 是人工覆核，低信心或高風險，像對外發布、涉及裁處，一律人審，畫面標示 AI 產出。</p>
-    <p>L0 有兩個踩過的坑：產生器重建文件時不能蓋掉使用者手改的內容；轉換器把不認得的元件整塊略過卻驗證全綠，所以組裝完要檢查每個佔位符都有填、原稿文字都有進去。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="15" data-time="1:49">
-  <p class="kicker">會前問題 · Q3</p>
-  <h2 class="title">閘門有順序，簡體字偵測與轉換分開</h2>
-  <p class="timeline-line"><b>生成</b><span class="sep">→</span>程式檢查結構、欄位、簡體字、用語<span class="sep">→</span>不過就帶錯誤訊息重試，最多 2 次<span class="sep">→</span>仍不過轉人工</p>
-  <p class="timeline-line" style="margin-top: 14px;"><b>通過</b><span class="sep">→</span>語意閘門逐欄位判斷<span class="sep">→</span>無依據機率過門檻或嚴重度高，轉人工</p>
-  <p class="timeline-line" style="margin-top: 14px;"><b>放行</b><span class="sep">→</span>套固定範本<span class="sep">→</span>檢查每個佔位符都有填<span class="sep">→</span>標「AI 產出」</p>
-  <div class="cards c2" style="margin-top: 26px;">
-    <div class="card accent"><p class="label">偵測與轉換是兩件事</p>
-      <p>偵測：只看簡體專用字，命中就記位置</p>
-      <p>轉換用 OpenCC：已是繁體用 t2tw；s2twp 會改寫繁體，不當偵測器</p>
-      <p>一對多的字做回歸測試：后／後、干／乾／幹、台／臺、发／發／髮</p>
-    </div>
-    <div class="card"><p class="label">大陸用語要有例外</p>
-      <p>黑名單用詞組比對，另設白名單</p>
-      <p>例：「質量」該改「品質」，但空品的「質量濃度」是正確用法</p>
-      <p>換模型前，先用同一批題目量簡體字出現率</p>
-    </div>
-  </div>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B3-5 必做步驟寫成程式碼　·　B4-2 兩個一定會踩的坑：空回應與逾時</p>
-  <aside class="notes">
-    <p>閘門的順序是：先生成，程式檢查結構、欄位、簡體字和用語，不過就把錯誤訊息帶回去重試，最多兩次，再不過轉人工或回退。通過之後才進語意閘門，逐欄位判斷；任一欄位無依據的機率超過門檻，或嚴重度高，就轉人工。全部放行之後，才套固定範本，檢查覆蓋率，標示 AI 產出。</p>
-    <p>簡體字要分偵測和轉換兩件事。偵測是逐字比對，只看簡體專用字，轉成繁體後字形會變、而且不是繁體常用字的字，命中就記錄位置、算錯誤。轉換用 OpenCC：s2twp 會轉成臺灣正體並替換慣用詞，例如軟件變軟體，但不要拿它當偵測器，因為它也會改寫本來就是繁體的文字；輸入已是繁體應該用 t2tw。一對多的字要做回歸測試，像后和後、干乾幹、台和臺、发發髮。</p>
-    <p>用語黑名單要有例外。質量在一般語境是大陸用語，應為品質，但空品領域的質量濃度是正確用法；數據在監測數據也是臺灣常用詞。所以要用詞組比對，並維護白名單。環境領域這類詞特別多。</p>
-    <p>簡體字的根源是中文訓練資料以簡體為大宗，部分模型夾雜簡體比較常見；換模型之前，先用同一批題目量簡體字出現率。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="16" data-time="1:50">
-  <p class="kicker">會前問題 · Q4</p>
-  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>問題 4</b>　使用者問題可能涉及不同資料來源與工具，應如何提升意圖判斷的準確性，並能依問題動態判斷、調用不同工具及進行多輪互動，而非完全依賴預先設定的固定流程？</p></div>
-  <h2 class="title">意圖分四層，信心低就回問</h2>
-  <table class="grid">
-    <colgroup><col style="width: 20%"><col style="width: 50%"><col style="width: 30%"></colgroup>
-    <thead><tr><th>層</th><th>做法</th><th>適合</th></tr></thead>
-    <tbody>
-      <tr><td><b>1 規則</b></td><td>編號、條號、測站代碼的格式比對</td><td>明確、可列舉的請求</td></tr>
-      <tr><td><b>2 小型判斷模型</b></td><td>選項＝各意圖＋「都不是」</td><td>大多數請求</td></tr>
-      <tr><td><b>3 LLM</b></td><td>前兩層低信心才叫</td><td>少數模糊、複雜的請求</td></tr>
-      <tr><td><b>4 回問</b></td><td>給 2～3 個選項讓使用者點，不猜</td><td>信心低於門檻</td></tr>
-    </tbody>
-  </table>
-  <div class="callout" style="margin-top: 18px;"><p>42 筆人工標註：小模型先分流與全交 LLM 都答對 42 筆，token 少 <b>72%</b></p></div>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B2-7 判斷：小模型先分流，需要時才叫 LLM　·　B3-5 必做步驟寫成程式碼</p>
-  <aside class="notes">
-    <p>第四題。意圖判斷分層路由。第一層規則：正則、關鍵字、編號格式，像計畫編號、條號、測站代碼，適合明確、可列舉的請求。我在客服系統的第一層放了六組硬編碼規則。</p>
-    <p>第二層小型判斷模型：選項是各個意圖加上「都不是」；請求混合了多個意圖，就改成每個意圖各問一題是非題，再加一題複雜度。大多數請求在這層解決。第三層才是 LLM，前兩層低信心或都不是時才叫。第四層是回問：信心低於門檻，給兩三個選項讓使用者點，不要讓模型猜；我的客服機器人是信心低於零點六就開單轉人工。</p>
-    <p>實測：我的收件分類有四十二筆人工標註，小模型先分流、需要時才叫 LLM，和全部交給 LLM，都答對四十二筆，但前者 token 少百分之七十二。</p>
-    <p>兩個踩坑。一是加關鍵字反而變差：我的客服第一版有關鍵字計分層，跨場景撞字造成並列、長句永遠比對不到、通用詞搶走其他場景，後來加了「場景庫零重複關鍵字」的回歸測試。二是中文要實測，選項描述要寫清楚、互斥，並放進「都不是」。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="17" data-time="1:51">
-  <p class="kicker">會前問題 · Q4</p>
-  <h2 class="title">框架規劃路徑，LLM 判斷要什麼</h2>
-  <table class="grid">
-    <colgroup><col style="width: 22%"><col style="width: 32%"><col style="width: 46%"></colgroup>
-    <thead><tr><th>做法</th><th>誰決定下一步</th><th>問題</th></tr></thead>
-    <tbody>
-      <tr><td><b>固定流程</b></td><td>開發者事先畫好</td><td>僵硬，分支爆炸</td></tr>
-      <tr><td><b>框架控制流程</b></td><td>規劃器依手上資料</td><td>路徑可推導，可單元測試</td></tr>
-      <tr><td><b>LLM 全權決定</b></td><td>LLM 每步自己選</td><td>漏呼叫、重複呼叫、難測試</td></tr>
-    </tbody>
-  </table>
-  <table class="grid" style="margin-top: 18px;">
-    <thead><tr><th>語言</th><th>同類框架</th><th>流程怎麼控制</th></tr></thead>
-    <tbody>
-      <tr><td><b>Java</b></td><td>Embabel</td><td>能力寫成 action；規劃器依手上資料排步驟，每步重新規劃</td></tr>
-      <tr><td><b>Python</b></td><td>LangGraph、Pydantic AI</td><td>開發者定義狀態圖，LLM 在節點間選路</td></tr>
-      <tr><td><b>JS／TS</b></td><td>LangGraph.js、Mastra</td><td>狀態圖或 workflow，步驟可單元測試</td></tr>
-    </tbody>
-  </table>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B1-1 固定流程寫程式，開放任務交給 Agent　·　B1-3 架構選定後</p>
-  <aside class="notes">
-    <p>這題常被想成二選一：固定流程，或讓 LLM 自己決定呼叫哪些工具。前者僵硬，新增能力要改流程圖、分支會爆炸；後者彈性高，但漏呼叫、重複呼叫、工具太多選錯，不可預測、難測試。中間有第三條路：用框架控制流程，LLM 只負責判斷使用者要什麼，路徑由程式依規則規劃。</p>
-    <p>以 Java 的 Embabel 框架為例，它建立在 Spring Boot 上。開發者把每個能力寫成一個 action，用方法參數宣告需要什麼型別的輸入、回傳什麼型別，例如「查監測數據：測站加期間，回傳監測結果」；goal 是要達成的結果，例如空品原因分析報告。規劃器依 action 的前置條件和產出，自動排出從目前已有的資料到目標的路徑，每執行一步就依最新狀態重新規劃，資料型別本身就是規劃的路標。</p>
-    <p>LLM 只做判斷：選哪個目標，信心低於門檻就回問；以及 action 內部需要語意的部分，像擬檢索計畫、摘要、撰寫。工具也是每一步只給該步需要的，不是一次全丟給 LLM；寫入類動作要使用者確認。所以流程是動態的，但每一步都看得懂、測得到。</p>
-    <p>我在法律關係圖網站就是這樣做：七步流程，LLM 只產生檢索計畫、不給工具，雙軌檢索、去重、截斷由 Java 確定性執行。踩過的坑也提一下：依資料內容分叉會讓規劃器卡住，新流程分支要另建 agent；框架對所有例外都重試，逾時要在應用層加看門狗。</p>
-    <p>其他語言也有同類框架。Python 可以看 LangGraph 和 Pydantic AI，JavaScript、TypeScript 可以看 LangGraph.js 和 Mastra。差別在於：Embabel 由規劃器依手上資料自動排步驟；LangGraph 這類是開發者先定義狀態圖，LLM 只在節點之間選路。兩種都比讓 LLM 全權決定好測試，選哪個看團隊用的語言。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="18" data-time="1:52">
-  <p class="kicker">會前問題 · Q4</p>
-  <h2 class="title">多輪狀態放程式裡，工具依需要給</h2>
-  <div class="cards c2" style="margin-top: 10px;">
-    <div class="card accent"><p class="label">多輪互動</p>
-      <p>已確認的條件存成結構化狀態：縣市、年度、計畫</p>
-      <p>缺什麼問什麼，一次問一個；追問有上限</p>
-      <p>每輪顯示目前條件，讓使用者直接改</p>
-      <p>新問題與條件衝突，問延續還是重來</p>
-    </div>
-    <div class="card"><p class="label">工具很多時</p>
-      <p>先依意圖篩出工具群組，再交給 LLM</p>
-      <p>或每個工具問「有關嗎」，只留機率高的</p>
-      <p>外部資料源包成 MCP 工具，方便共用</p>
-      <p>授權與資料規則留在後端</p>
-    </div>
-  </div>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B1-1 固定流程寫程式，開放任務交給 Agent　·　B3-5 必做步驟寫成程式碼</p>
-  <aside class="notes">
-    <p>多輪互動，狀態放在程式裡。把對話中已確認的條件存成結構化狀態，也就是槽位，例如縣市是臺中市、期間是二〇二五、介質是空氣，而不是每輪把整段對話重送給模型去猜。目標需要的槽位沒填滿才追問，一次問一個、給選項；追問次數設上限，我的法律關係圖網站最多三輪，超過就用現有資訊作答並說明限制。每輪把目前的篩選條件顯示給使用者，讓使用者直接修改，比模型猜「去年」指哪一年可靠。新問題和目前槽位衝突時，問使用者要延續還是重來。</p>
-    <p>工具很多時，超過一、二十個，LLM 選錯的機率會上升。做法是先依意圖篩出相關的工具群組再交給 LLM；或者對每個工具問一題「這個工具和這個請求有關嗎」，用小型判斷模型的是非題，只留機率高的。外部資料源包成 MCP 工具，方便不同 Agent 共用；但正式的授權與資料規則留在後端。我的網站端有二十二個工具依頁面狀態註冊，而且刻意不做「送出」工具，Agent 只能填、不能送。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="19" data-time="1:53">
-  <p class="kicker">會前問題 · Q4</p>
-  <h2 class="title">環境部的例子：問題拆成六步</h2>
-  <div class="callout" style="margin-top: 0;"><p>「臺中大里去年空品為什麼比較差？有哪些相關計畫？」</p></div>
-  <table class="grid" style="margin-top: 22px;">
-    <colgroup><col style="width: 20%"><col style="width: 80%"></colgroup>
-    <tbody>
-      <tr><td><b>1 意圖判斷</b></td><td>Jev（小型是非題判斷模型）：監測數據查詢、報告檢索，兩個意圖都成立</td></tr>
-      <tr><td><b>2 抽條件</b></td><td>規則＋詞典：大里區→臺中市、空品區、最近測站；去年→ 2025</td></tr>
-      <tr><td><b>3 查數據</b></td><td>程式 action：查監測數據、算超標日數</td></tr>
-      <tr><td><b>4 找報告</b></td><td>action：metadata 過濾（臺中、空氣、近 3 年、定稿）後雙軌檢索</td></tr>
-      <tr><td><b>5 查法規</b></td><td>需要時才做，查現行條文</td></tr>
-      <tr><td><b>6 綜合與把關</b></td><td>LLM 只能引用步驟 3～5 並附出處；閘門把關，低信心轉人工</td></tr>
-    </tbody>
-  </table>
-  <p class="src" style="color: var(--text-2);">詳見／對應講座：B1-1 固定流程寫程式，開放任務交給 Agent　·　B2-7 小模型先分流</p>
-  <aside class="notes">
-    <p>用環境部的場景走一遍。使用者問：「臺中大里去年空品為什麼比較差？有哪些相關計畫？」</p>
-    <p>步驟一，意圖判斷：Jev 對兩個意圖各問一題，監測數據查詢和報告檢索都成立。步驟二，抽條件：規則加詞典，把大里區對到臺中市、空品區和最近的測站，去年對到二〇二五。步驟三，查數據：這是程式的 action，從環境資料開放平臺查監測數據、算超標日數。步驟四，找報告：另一個 action，用 metadata 過濾臺中、空氣、近三年、定稿，再雙軌檢索，資料來源是剛剛第一、二題講的專案報告索引。步驟五，需要時查現行法規條文。步驟六，綜合：LLM 只能引用步驟三到五的結果並附出處，再過第三題的格式與語意閘門，低信心轉人工。</p>
-    <p>步驟三到五的順序與要不要做，由規劃器依「目前手上有沒有測站、有沒有期間」決定；使用者沒說期間，就在步驟二追問。這就是動態，但每一步都是看得懂、測得到的程式。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="20" data-time="1:54">
-  <p class="kicker">參考 · 延伸題 甲</p>
-  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>延伸題 甲</b>　Agent 要開放哪些工具？哪些動作一定要人核准？</p></div>
-  <h2 class="title">工具給最少，最後一步留給人</h2>
-  <ul class="points compact">
-    <li>固定流程寫成程式；開放式、多步驟任務才交給 Agent</li>
-    <li>工具只開白名單、最小權限；每步驟設逾時上限</li>
-    <li><b>送出、刪除、中止、覆寫</b>一律由人核准</li>
-    <li>例：誰能看哪份監測資料，由程式擋，不是在提示詞寫「請勿洩漏」</li>
-  </ul>
-  <div class="callout">
-    <p>講座出處：B1-1、B1-2 架構怎麼選　·　A3-2 AI 工具本身也是攻擊面　·　B3-6「送出」只留給人按　·　B2-3 承辦人最終判斷</p>
-  </div>
-  <aside class="notes">
-    <p>第一題的回答：只開放任務需要的工具，必須保證做到的步驟寫進程式碼，不交給 Agent 決定。送出、刪除、中止、覆寫這類動作一律由人核准。我在法律關係圖網站就刻意不做「送出」工具，Agent 只能填、不能送。開發端也一樣：我遇過子代理未經同意中止一筆跑了兩小時的資料庫交易，所以審查代理一律唯讀，破壞性指令要人核准。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="21" data-time="1:55">
-  <p class="kicker">參考 · 延伸題 乙</p>
-  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>延伸題 乙</b>　標案裡用 AI Coding，開工前要和機關確認哪些事？</p></div>
-  <h2 class="title">開工前，先和機關確認三件事</h2>
-  <ul class="points compact">
-    <li>契約有沒有納入工程會的 <b>AI 特別聲明</b></li>
-    <li>哪些 AI 工具與模型經機關同意可用（陸製含地端都要避開）</li>
-    <li>AI 寫的程式碼算不算「AI 產出的履約標的」，要不要標明</li>
-    <li>哪些資料不能進 AI：例如未公開的監測數據、計畫成果草稿</li>
-  </ul>
-  <div class="callout">
-    <p>結論寫進治理檔。講座出處：A3-6 契約 AI 條款　·　A1-4 使用邊界　·　B2-3、B2-4 政府限制　·　S9-2 明天就能做的事</p>
-  </div>
-  <aside class="notes">
-    <p>第二題：開工前要確認三件事。契約有沒有納入工程會的特別聲明；哪些工具與模型經機關同意可用；AI 寫的程式碼算不算 AI 產出的履約標的，要不要事先同意並標明，這是我的解讀，請和機關確認。確認的結果寫進專案的治理檔，AI 每次開工都會先讀，不要等到驗收才發現不能用。以上不是法律意見，以契約與主管機關解釋為準。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="22" data-time="1:56">
-  <p class="kicker">參考 · 延伸題 丙</p>
-  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>延伸題 丙</b>　法規查詢的評測集怎麼建、放哪些題目？</p></div>
-  <h2 class="title">評測集從 30 題起步，先放易錯題</h2>
-  <ul class="points compact">
-    <li>人工標註 30 題起步；換模型、改提示詞都能一鍵重跑</li>
-    <li><b>母法＋授權辦法</b>：裁判費 77-13 條、空污法第 17 條費率</li>
-    <li>白話問法、條號精確查詢、應該拒答的題目</li>
-    <li>上線踩過的坑，轉成回歸題</li>
-  </ul>
-  <div class="callout">
-    <p>講座出處：B3-3 只查母法會答錯　·　B3-4 兩軌零重疊　·　B3-7 規則搬家時掉了　·　B2-8 怎麼評測　·　S9-2 30 題評測集</p>
-  </div>
-  <aside class="notes">
-    <p>第三題：先做一份人工標註的評測集，30 題就能起步。題目優先放已知會答錯的，像只查母法會答錯的裁判費、空污費費率；再放白話問法、條號精確查詢、應該拒答的題目。上線遇到的坑也轉成回歸題。我自己的法規系統還沒有引用正確率的量化評測，這是我的缺口。</p>
-  </aside>
-</section>
-
-<section class="slide" data-code="QA" data-page="23" data-time="1:57">
-  <p class="kicker">參考 · 延伸題 丁</p>
-  <div class="callout amber" style="margin: 0 0 18px;"><p style="font-size: 28px;"><b>延伸題 丁</b>　機關沒有 GPU、資料又不能出機關，哪些 AI 功能可以先做？</p></div>
-  <h2 class="title">沒有 GPU，先上 LLM 以外的小模型</h2>
-  <ul class="points compact">
-    <li>CPU 不跑 LLM；檢索、分類分流、OCR、會後語音轉寫可以先上</li>
-    <li>小模型先分流，再叫 LLM：實測 token 少 72%</li>
-    <li>擋掉的量越多，之後要買的 GPU 越少</li>
-    <li>選非陸製模型，換完要重跑評測</li>
-  </ul>
-  <div class="callout">
-    <p>講座出處：B2-4 換得掉但有代價　·　B2-5 先變成文字　·　B2-6 先撈再排　·　B2-7 小模型先分流　·　B2-8 只有 CPU 那一欄</p>
-  </div>
-  <aside class="notes">
-    <p>第四題：CPU 不跑 LLM，但 LLM 以外的小模型都可以先在機關內上線：法規與計畫報告的檢索、陳情或收件的分類分流、掃描檔 OCR、會議錄音的會後批次轉寫。先用小模型擋掉能擋的請求，再依實際要送給 LLM 的量評估要不要買 GPU。模型要選非陸製的，換完重跑評測，準確度通常會掉一些。</p>
-  </aside>
-</section>
-
-<section class="slide split cover" data-code="QA" data-page="24" data-time="1:58">
-  <div class="bg-figure shift"><img src="media/ill/I01-tools-change-method-stays.jpg" alt=""></div>
-  <div class="text-col">
-    <p class="kicker">諮詢交流 · 結束</p>
-    <h1 class="title">謝謝大家</h1>
-    <p class="subtitle" style="margin-top: 30px;">AI 的產出先當成不可信，<br>再用證據換取信任。</p>
-    <p class="by">講者　Kevin Tsai</p>
-  </div>
-  <aside class="notes">
-    <p>時間差不多了，今天的交流先到這裡。</p>
-    <p>再回扣一次今天的主張：AI 的產出先當成不可信，再用證據換取信任。工具會換，這套方法帶得走。</p>
-    <p>謝謝大家，我是 Kevin。</p>
+    <p>謝謝大家的時間。還有問題的話，會後歡迎再找我交流。</p>
   </aside>
 </section>
 </div>

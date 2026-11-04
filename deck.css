@@ -1,0 +1,494 @@
+/*
+ * 講座投影片樣式（深色科技風）
+ * 畫布固定 1920×1080，由 deck.js 依視窗縮放。
+ * 字級下限：內文 32px、註解 26px、標題 60px（現場與遠端同時觀看，遠端畫面會被壓縮）。
+ * 背景色必須是 #0B1424，和深色版插圖的背景一致，插圖才能滿版無縫。
+ */
+
+/* ── 色彩與字型 token ─────────────────────────────── */
+:root {
+  --bg: #0b1424;            /* 頁面底色（與插圖背景相同） */
+  --bg-card: #12203a;       /* 卡片、表格底色 */
+  --bg-card-2: #182a4a;     /* 卡片強調底色 */
+  --line: rgba(63, 214, 195, 0.28);   /* 細框線（青綠半透明） */
+  --line-soft: rgba(184, 196, 214, 0.16);
+  --text: #f2f5fa;          /* 主要文字：只用白與淺灰 */
+  --text-2: #b8c4d6;        /* 次要文字 */
+  --text-3: #8a9ab3;        /* 註解文字 */
+  --teal: #3fd6c3;          /* 強調色（只用在線條、標記、數字） */
+  --teal-deep: #2bb3a3;
+  --amber: #f2a541;
+  --red: #ef6b6b;
+  --green: #4fd18b;
+  --font: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+  --mono: "Cascadia Code", "Consolas", "Noto Sans TC", monospace;
+  --stage-w: 1920px;
+  --stage-h: 1080px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #05080f;
+  color: var(--text);
+  font-family: var(--font);
+  overflow: hidden;
+}
+
+/* ── 舞台與投影片 ─────────────────────────────────── */
+#viewport {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#stage {
+  position: relative;
+  width: var(--stage-w);
+  height: var(--stage-h);
+  transform-origin: center center;
+  flex: none;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  width: var(--stage-w);
+  height: var(--stage-h);
+  background-color: var(--bg);
+  /* 細格線＋左上青綠光暈，營造科技感；透明度低，不干擾文字 */
+  background-image:
+    radial-gradient(1200px 700px at 8% 0%, rgba(43, 179, 163, 0.12), transparent 60%),
+    linear-gradient(rgba(63, 214, 195, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(63, 214, 195, 0.035) 1px, transparent 1px);
+  background-size: auto, 60px 60px, 60px 60px;
+  overflow: hidden;
+  display: none;
+  padding: 96px 120px 110px;
+}
+
+.slide.active { display: block; }
+
+/* 匯出模式：所有投影片由上往下排，給 Playwright 逐張截圖與量測 */
+body.export { overflow: auto; background: var(--bg); }
+body.export #viewport { position: static; display: block; }
+body.export #stage { transform: none !important; width: auto; height: auto; }
+body.export .slide { position: relative; display: block; margin: 0; }
+body.export .notes, body.export .hud { display: none !important; }
+
+/* 匯出背景層時：隱藏文字但保留版面（visibility 會連標記一起藏，改用透明字色） */
+body.hide-text .slide :is(.kicker, .title, .subtitle, .lead, li, p, td, th, .hero-num, .hero-unit,
+  .hero-label, .cap, .tag, .poll-q, .poll-opt, .chip, .label, .stat-num, .stat-label, .flow-step, .quote, .src) {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.hide-text .slide :is(.kicker, .title, .subtitle, .lead, li, p, td, th, .hero-num, .hero-unit,
+  .hero-label, .cap, .tag, .poll-q, .poll-opt, .chip, .label, .stat-num, .stat-label, .flow-step, .quote, .src) * {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
+/* ── 頁首：段落代號、頁碼、時間錨點 ───────────────── */
+.kicker {
+  font-family: var(--mono);
+  font-size: 26px;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  margin: 0 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.kicker::before {
+  content: "";
+  width: 44px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--teal);
+  box-shadow: 0 0 16px rgba(63, 214, 195, 0.7);
+}
+
+.title {
+  font-size: 68px;
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: 0.01em;
+  margin: 0 0 22px;
+  color: var(--text);
+}
+.title .em { color: var(--teal); }
+
+.subtitle {
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--text-2);
+  margin: 0 0 34px;
+}
+
+.lead {
+  font-size: 40px;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 0 0 28px;
+}
+
+/* ── 條列 ─────────────────────────────────────────── */
+ul.points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+ul.points > li {
+  position: relative;
+  font-size: 38px;
+  line-height: 1.45;
+  padding-left: 46px;
+  margin: 0 0 22px;
+  color: var(--text);
+}
+ul.points > li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.55em;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--teal);
+  box-shadow: 0 0 12px rgba(63, 214, 195, 0.6);
+}
+ul.points > li.warn::before { background: var(--amber); box-shadow: 0 0 12px rgba(242, 165, 65, 0.6); }
+ul.points > li.bad::before { background: var(--red); box-shadow: 0 0 12px rgba(239, 107, 107, 0.6); }
+ul.points.compact > li { font-size: 34px; margin-bottom: 16px; }
+ul.points li ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+ul.points li ul li {
+  position: relative;
+  font-size: 32px;
+  line-height: 1.45;
+  color: var(--text-2);
+  padding-left: 34px;
+  margin: 0 0 8px;
+}
+ul.points li ul li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.62em;
+  width: 14px;
+  height: 3px;
+  background: var(--text-3);
+}
+.hl { color: var(--teal); font-weight: 700; }
+.hl-amber { color: var(--amber); font-weight: 700; }
+.hl-red { color: var(--red); font-weight: 700; }
+b, strong { font-weight: 700; color: var(--text); }
+
+/* ── 版型：文字在左、深色插圖滿版 ───────────────────── */
+.slide.split .text-col {
+  position: relative;
+  z-index: 2;
+  width: 760px;
+}
+.slide.split.wide-text .text-col { width: 880px; }
+.slide .bg-figure {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.slide .bg-figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+  display: block;
+  /* 邊緣淡出，避免插圖背景和頁面底色有些微色差時露出矩形邊界 */
+  -webkit-mask-image: radial-gradient(130% 120% at 72% 50%, #000 62%, transparent 100%);
+  mask-image: radial-gradient(130% 120% at 72% 50%, #000 62%, transparent 100%);
+}
+/* 左側加深，確保文字可讀 */
+.slide .bg-figure::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--bg) 0%, rgba(11, 20, 36, 0.92) 30%, rgba(11, 20, 36, 0.35) 46%, transparent 58%);
+}
+.slide.split.wide-text .bg-figure::after {
+  background: linear-gradient(90deg, var(--bg) 0%, rgba(11, 20, 36, 0.94) 38%, rgba(11, 20, 36, 0.4) 54%, transparent 64%);
+}
+
+/* ── 版型：封面 ─────────────────────────────────────── */
+.slide.cover .text-col { position: relative; z-index: 2; width: 900px; margin-top: 120px; }
+.slide.cover .title { font-size: 88px; line-height: 1.18; }
+.slide.cover .subtitle { font-size: 40px; }
+.slide.cover .by { font-size: 32px; color: var(--text-2); margin-top: 60px; }
+
+/* ── 截圖框 ─────────────────────────────────────────── */
+.shot {
+  position: relative;
+  margin: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px solid var(--line);
+  background: #0e1a2e;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+}
+.shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+.shot.contain img { object-fit: contain; background: #0e1a2e; }
+.shot-wrap { margin: 0; }
+.shot-wrap .cap {
+  font-size: 26px;
+  line-height: 1.4;
+  color: var(--text-2);
+  margin: 14px 4px 0;
+}
+
+/* 截圖排版容器 */
+.media-row {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+.media-row > * { flex: 1 1 0; min-width: 0; }
+
+/* ── 圖表（程式產生的圖片） ─────────────────────────── */
+.chart {
+  margin: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 2px solid var(--line-soft);
+  background: #fcfcfb;
+}
+.chart img { display: block; width: 100%; height: auto; }
+
+/* ── 大字數字 ───────────────────────────────────────── */
+.hero-row {
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  margin: 40px 0 30px;
+}
+.hero {
+  flex: 1 1 0;
+  padding: 44px 48px;
+  border-radius: 24px;
+  background: linear-gradient(160deg, rgba(24, 42, 74, 0.95), rgba(18, 32, 58, 0.9));
+  border: 2px solid var(--line);
+}
+.hero-num {
+  font-size: 150px;
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.hero-num.teal { color: var(--teal); }
+.hero-num.amber { color: var(--amber); }
+.hero-num.red { color: var(--red); }
+.hero-unit { font-size: 56px; font-weight: 700; color: var(--text-2); margin-left: 8px; }
+.hero-label { font-size: 34px; line-height: 1.4; color: var(--text-2); margin-top: 14px; }
+.hero-arrow {
+  flex: none;
+  font-size: 90px;
+  color: var(--teal);
+  text-shadow: 0 0 24px rgba(63, 214, 195, 0.6);
+}
+
+/* ── 表格 ───────────────────────────────────────────── */
+table.grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 30px;
+  line-height: 1.4;
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+}
+table.grid th, table.grid td {
+  padding: 18px 24px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line-soft);
+}
+table.grid th {
+  background: var(--bg-card-2);
+  color: var(--teal);
+  font-weight: 700;
+  font-size: 28px;
+}
+table.grid td { background: rgba(18, 32, 58, 0.82); color: var(--text); }
+table.grid tr:last-child td { border-bottom: none; }
+table.grid td.dim { color: var(--text-2); }
+
+/* ── 卡片、標籤、流程 ───────────────────────────────── */
+.cards {
+  display: grid;
+  gap: 28px;
+}
+.cards.c2 { grid-template-columns: repeat(2, 1fr); }
+.cards.c3 { grid-template-columns: repeat(3, 1fr); }
+.card {
+  padding: 32px 36px;
+  border-radius: 22px;
+  background: rgba(18, 32, 58, 0.88);
+  border: 2px solid var(--line-soft);
+}
+.card.accent { border-color: var(--line); background: rgba(24, 42, 74, 0.92); }
+.card .label {
+  font-family: var(--mono);
+  font-size: 26px;
+  color: var(--teal);
+  margin: 0 0 12px;
+}
+.card p { font-size: 32px; line-height: 1.45; margin: 0; color: var(--text); }
+.card p + p { margin-top: 10px; color: var(--text-2); }
+
+.tag {
+  display: inline-block;
+  font-size: 26px;
+  font-weight: 700;
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: 2px solid var(--amber);
+  color: var(--amber);
+  margin-left: 16px;
+  vertical-align: middle;
+}
+.tag.teal { border-color: var(--teal); color: var(--teal); }
+
+.callout {
+  margin-top: 30px;
+  padding: 26px 34px;
+  border-left: 8px solid var(--teal);
+  border-radius: 12px;
+  background: rgba(43, 179, 163, 0.12);
+}
+.callout p { font-size: 36px; line-height: 1.45; margin: 0; color: var(--text); }
+.callout.amber { border-left-color: var(--amber); background: rgba(242, 165, 65, 0.12); }
+
+.src {
+  position: absolute;
+  left: 120px;
+  bottom: 44px;
+  font-size: 26px;
+  color: var(--text-3);
+  margin: 0;
+  z-index: 3;
+}
+
+/* ── 投票頁 ─────────────────────────────────────────── */
+.poll {
+  margin-top: 30px;
+  padding: 40px 48px;
+  border-radius: 26px;
+  border: 2px solid var(--line);
+  background: rgba(18, 32, 58, 0.9);
+}
+.poll-q { font-size: 46px; font-weight: 700; line-height: 1.4; margin: 0 0 30px; }
+.poll-opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.poll-opt {
+  font-size: 36px;
+  padding: 20px 28px;
+  border-radius: 16px;
+  background: var(--bg-card-2);
+  border: 2px solid var(--line-soft);
+  margin: 0;
+}
+
+/* ── 講者備註（只在講者模式顯示） ───────────────────── */
+.notes { display: none; }
+
+/* ── 頁碼與段落進度 ─────────────────────────────────── */
+.hud {
+  position: absolute;
+  right: 60px;
+  bottom: 36px;
+  z-index: 5;
+  font-family: var(--mono);
+  font-size: 22px;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+}
+.progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--teal-deep), var(--teal));
+  box-shadow: 0 0 14px rgba(63, 214, 195, 0.6);
+  z-index: 5;
+}
+
+/* ── 總覽模式（按 O） ───────────────────────────────── */
+body.overview #viewport { position: static; display: block; overflow: auto; height: 100%; }
+body.overview #stage { transform: none !important; width: auto; height: auto; display: grid; grid-template-columns: repeat(4, 480px); gap: 18px; padding: 24px; }
+body.overview .slide { position: relative; display: block; zoom: 0.25; cursor: pointer; outline: 4px solid transparent; }
+body.overview .slide.active { outline-color: var(--teal); }
+
+/* 黑畫面（按 B） */
+body.blackout #viewport::after { content: ""; position: fixed; inset: 0; background: #000; z-index: 99; }
+
+/* 插圖往右移（主體偏中央的插圖，讓出左側文字區） */
+.slide .bg-figure.shift img { transform: translateX(9%); }
+.slide .bg-figure.shift-more img { transform: translateX(16%); }
+
+/* 深色圖表：1680×720 的內容區尺寸，1:1 放置不縮放 */
+.chart-dark { margin: 26px 0 0; width: 1680px; height: 720px; }
+.chart-dark img { display: block; width: 1680px; height: 720px; }
+.timeline-line { font-size: 34px; line-height: 1.4; color: var(--text-2); margin: 0; }
+.timeline-line b { color: var(--text); }
+.timeline-line .sep { color: var(--teal); margin: 0 14px; }
+
+/* 程式碼裡的註解（次要文字色，和程式碼區分） */
+.code-cm { color: var(--text-2); }
+
+/* 點圖放大（deck.js 的 lightbox；匯出模式不會出現） */
+body:not(.export) .slide img[src*="media/shot/"],
+body:not(.export) .slide img[src*="media/chart/"] { cursor: zoom-in; }
+.lightbox { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center;
+  background: rgba(4, 8, 16, 0.94); cursor: zoom-out; }
+.lightbox.on { display: flex; }
+.lightbox img { max-width: 96vw; max-height: 96vh; object-fit: contain; box-shadow: 0 0 40px rgba(0,0,0,.6); }
+
+/* 講師介紹頁（S0-2）：頭像＋簡介＋頻道 QR（右側直排），下方九個系統縮圖 */
+.intro-slide .intro-row { display: flex; gap: 40px; align-items: center; margin-top: 10px; }
+.intro-slide .intro-avatar { width: 240px; height: 240px; border-radius: 50%; object-fit: cover;
+  border: 4px solid var(--teal); box-shadow: 0 0 0 10px rgba(63, 214, 195, 0.12); flex: none; }
+.intro-slide .intro-who { flex: 1; }
+.intro-slide .intro-who .title { margin: 0 0 8px; }
+.intro-slide .intro-en { font-size: 40px; color: var(--text-2); font-weight: 500; margin-left: 24px; }
+.intro-slide .intro-tagline { font-size: 30px; color: var(--teal); margin: 0 0 10px; }
+.intro-slide .intro-bio { font-size: 28px; line-height: 1.5; color: var(--text); margin: 0 0 14px; }
+.intro-slide .intro-tags { list-style: none; padding: 0; margin: 0 0 12px; display: flex; flex-wrap: wrap; gap: 12px; }
+.intro-slide .intro-tags li { font-size: 26px; padding: 4px 18px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--bg-card-2); color: var(--text); }
+.intro-slide .intro-book { font-size: 28px; color: var(--amber); margin: 0; }
+.intro-slide .intro-channels { display: flex; flex-direction: row; gap: 44px; flex: none; }
+.intro-slide .channel { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.intro-slide .channel img { width: 220px; height: 220px; background: #fff; padding: 12px; border-radius: 12px; }
+.intro-slide .channel p { font-size: 26px; color: var(--text-2); margin: 0; line-height: 1.3; text-align: center; }
+.intro-slide .channel p b { display: block; color: var(--text); font-size: 28px; }
+.intro-slide .intro-projects { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px 22px; margin-top: 26px; }
+.intro-slide .intro-projects figure { margin: 0; }
+.intro-slide .intro-projects img { width: 100%; height: 165px; object-fit: cover; object-position: top; border-radius: 8px; border: 1px solid var(--line); display: block; }
+.intro-slide .intro-projects figcaption { font-size: 26px; color: var(--text-2); margin-top: 4px; }
+.intro-slide .intro-teach { font-size: 26px; color: var(--text-2); margin: 8px 0 0; line-height: 1.4; }
+
+/* 投影片內的連結：沿用強調色，不用瀏覽器預設藍 */
+.slide a { color: var(--teal); text-decoration: none; border-bottom: 1px solid var(--line); }
